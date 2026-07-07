@@ -18,7 +18,7 @@ import {
   ExternalLink,
   X,
 } from "lucide-react";
-import { getXHSStats, getXHSNotes, syncXHS, searchXHS } from "@/lib/api";
+import { getXHSStats, getXHSNotes, syncXHS, searchXHS, getXHSSearchEngine } from "@/lib/api";
 import type { XHSStats, XHSNoteRecord } from "@/lib/types";
 import XHSOverviewCard from "@/components/XHSOverviewCard";
 
@@ -58,19 +58,27 @@ export default function XHSPage() {
       publish_time: string;
       url: string;
       tags: string;
+      source?: string;
     }>
   >([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [searchEngineStats, setSearchEngineStats] = useState<{
+    total_notes: number;
+    sources: Record<string, number>;
+    xhs_api_running: boolean;
+  } | null>(null);
 
   const loadData = useCallback(async (sort: string) => {
     setLoading(true);
     try {
-      const [statsData, notesData] = await Promise.all([
+      const [statsData, notesData, engineData] = await Promise.all([
         getXHSStats(),
         getXHSNotes(100, sort),
+        getXHSSearchEngine(),
       ]);
       setStats(statsData);
       setNotes(notesData.notes);
+      setSearchEngineStats(engineData);
     } catch (err) {
       console.error("获取小红书数据失败:", err);
     }
@@ -80,6 +88,11 @@ export default function XHSPage() {
   useEffect(() => {
     loadData(sortBy);
   }, [sortBy, loadData]);
+
+  // 智能检测：URL vs 关键词
+  const isUrlInput = (text: string): boolean => {
+    return /(?:https?:\/\/)?(?:www\.)?(?:xiaohongshu\.com|rednote\.com|xhslink\.com)\S+/.test(text.trim());
+  };
 
   const handleSearch = async () => {
     if (!searchKeyword.trim()) return;
@@ -188,9 +201,18 @@ export default function XHSPage() {
                       handleSearch();
                     }
                   }}
-                  placeholder="搜索小红书帖子...例如：真丝连衣裙、通勤穿搭、面料测评"
+                  placeholder="搜索关键词或粘贴小红书链接... 例如：真丝连衣裙、跨境电商、https://www.xiaohongshu.com/explore/..."
                   className="w-full pl-10 pr-4 py-2.5 border border-line rounded-md text-sm bg-inset text-fg-strong placeholder:text-fainter focus:outline-none focus:border-[#33363d]"
                 />
+                {searchKeyword.trim() && (
+                  <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-mono px-1.5 py-0.5 rounded ${
+                    isUrlInput(searchKeyword)
+                      ? "bg-info/15 text-info"
+                      : "bg-line-soft text-fainter"
+                  }`}>
+                    {isUrlInput(searchKeyword) ? "LINK" : "KEYWORD"}
+                  </span>
+                )}
               </div>
               <button
                 onClick={handleSearch}
@@ -222,8 +244,28 @@ export default function XHSPage() {
                 </button>
               )}
             </div>
+            {/* 搜索引擎状态 */}
+            <div className="flex items-center gap-4 mt-2.5 text-[9px] font-mono text-fainter">
+              {searchEngineStats && (
+                <>
+                  <span>
+                    索引 <span className="text-fg font-semibold">{searchEngineStats.total_notes}</span> 篇笔记
+                  </span>
+                  {searchEngineStats.sources.explore_db > 0 && (
+                    <span>采集数据 {searchEngineStats.sources.explore_db}</span>
+                  )}
+                  {searchEngineStats.sources.json_db > 0 && (
+                    <span>搜索库 {searchEngineStats.sources.json_db}</span>
+                  )}
+                  <span className="flex items-center gap-1">
+                    <span className={`w-1.5 h-1.5 rounded-full ${searchEngineStats.xhs_api_running ? "bg-up" : "bg-down"}`} />
+                    XHS API {searchEngineStats.xhs_api_running ? "在线" : "离线"}
+                  </span>
+                </>
+              )}
+            </div>
             {showSearchResults && searchResults.length > 0 && (
-              <div className="mt-3 text-xs text-faint">
+              <div className="mt-2 text-xs text-faint">
                 找到 <span className="font-semibold text-fg-strong">{searchResults.length}</span> 条相关结果
               </div>
             )}
@@ -255,9 +297,21 @@ export default function XHSPage() {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <h5 className="text-sm font-medium text-fg-strong group-hover:text-info line-clamp-2">
-                            {result.title || "无标题"}
-                          </h5>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h5 className="text-sm font-medium text-fg-strong group-hover:text-info line-clamp-2">
+                              {result.title || "无标题"}
+                            </h5>
+                            {result.source && (
+                              <span className={`text-[8px] font-mono px-1.5 py-0.5 rounded flex-shrink-0 ${
+                                result.source === "realtime" ? "bg-info/15 text-info" :
+                                result.source === "explore_db" ? "bg-up/15 text-up" :
+                                "bg-line-soft text-fainter"
+                              }`}>
+                                {result.source === "realtime" ? "实时" :
+                                 result.source === "explore_db" ? "采集" : "搜索库"}
+                              </span>
+                            )}
+                          </div>
                           {result.description && (
                             <p className="text-xs text-muted mt-1 line-clamp-2">{result.description}</p>
                           )}

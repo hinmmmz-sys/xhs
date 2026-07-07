@@ -144,12 +144,44 @@ export async function searchXHS(keyword: string, maxResults: number = 20): Promi
     publish_time: string;
     url: string;
     tags: string;
+    source?: string;
   }>;
 }> {
   const res = await client.post("/api/xhs/search", {
     keyword,
     max_results: maxResults,
   });
+  return res.data;
+}
+
+export async function getXHSSearchEngine(): Promise<{
+  total_notes: number;
+  sources: Record<string, number>;
+  xhs_api_running: boolean;
+}> {
+  const res = await client.get("/api/xhs/search-engine");
+  return res.data;
+}
+
+export async function searchXHSUserProfile(url: string): Promise<{
+  url: string;
+  total: number;
+  notes: Array<{
+    id: string;
+    title: string;
+    description: string;
+    type: string;
+    author: string;
+    likes: string;
+    comments: string;
+    favorites: string;
+    shares: string;
+    publish_time: string;
+    url: string;
+    tags: string;
+  }>;
+}> {
+  const res = await client.post("/api/xhs/user-profile", { url });
   return res.data;
 }
 

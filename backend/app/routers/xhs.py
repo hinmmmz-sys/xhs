@@ -4,7 +4,13 @@ from fastapi import APIRouter, Query
 from pydantic import BaseModel
 
 from app.services.xhs_parser import read_xhs_notes, compute_xhs_stats
-from app.services.xhs_search import search_xhs_notes, get_note_detail
+from app.services.xhs_search import (
+    search_xhs_notes,
+    get_note_detail,
+    search_by_user_profile,
+    get_search_stats,
+    invalidate_cache,
+)
 
 router = APIRouter()
 
@@ -42,6 +48,7 @@ async def xhs_notes(
 @router.get("/sync")
 async def xhs_sync():
     """同步小红书数据（从 XHS-Downloader 数据库重新读取）"""
+    invalidate_cache()  # 清除搜索缓存
     notes = read_xhs_notes()
     stats = compute_xhs_stats(notes)
     return {
@@ -49,6 +56,12 @@ async def xhs_sync():
         "total_notes": len(notes),
         "stats": stats.model_dump(),
     }
+
+
+@router.get("/search-engine")
+async def xhs_search_engine_stats():
+    """获取搜索引擎状态（数据量、数据源、API 状态）"""
+    return get_search_stats()
 
 
 class SearchRequest(BaseModel):
@@ -60,9 +73,13 @@ class NoteDetailRequest(BaseModel):
     url: str
 
 
+class UserProfileRequest(BaseModel):
+    url: str
+
+
 @router.post("/search")
 async def xhs_search(request: SearchRequest):
-    """搜索小红书帖子"""
+    """搜索小红书帖子（关键词 or 链接，自动识别）"""
     results = await search_xhs_notes(request.keyword, request.max_results)
     return {
         "keyword": request.keyword,
@@ -73,8 +90,19 @@ async def xhs_search(request: SearchRequest):
 
 @router.post("/note-detail")
 async def xhs_note_detail(request: NoteDetailRequest):
-    """获取单个帖子的详细信息"""
+    """获取单个帖子的详细信息（实时抓取）"""
     detail = await get_note_detail(request.url)
     if detail:
         return {"success": True, "data": detail}
     return {"success": False, "data": None, "message": "获取详情失败"}
+
+
+@router.post("/user-profile")
+async def xhs_user_profile(request: UserProfileRequest):
+    """通过用户主页链接搜索该用户的所有作品"""
+    results = await search_by_user_profile(request.url)
+    return {
+        "url": request.url,
+        "total": len(results),
+        "notes": results,
+    }
