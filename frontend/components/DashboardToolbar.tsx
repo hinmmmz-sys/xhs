@@ -9,7 +9,14 @@ const DATE_RANGES = [
   { value: "30d", label: "近30天" },
 ];
 
-const CHANNELS = ["全部渠道", "自然搜索", "广告投放", "直播自营", "短视频自营", "站外引流"];
+const CHANNELS = [
+  "全部渠道",
+  "自然搜索",
+  "广告投放",
+  "直播自营",
+  "短视频自营",
+  "站外引流",
+];
 
 interface DashboardToolbarProps {
   dateRange: string;
@@ -35,14 +42,14 @@ export default function DashboardToolbar({
   dateLabel,
 }: DashboardToolbarProps) {
   return (
-    <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+    <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
       {/* Left: Breadcrumb + Title */}
       <div className="flex items-center gap-2">
-        <span className="text-xs text-slate-400 font-medium">Dashboard</span>
-        <ChevronRight className="w-3 h-3 text-slate-300" />
-        <span className="text-xs text-slate-600 font-medium">运营总览</span>
+        <span className="text-xs text-faint font-medium">Dashboard</span>
+        <ChevronRight className="w-3 h-3 text-fainter" />
+        <span className="text-xs text-fg font-medium">运营总览</span>
         {dateLabel && (
-          <span className="ml-2 text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+          <span className="ml-2 text-[10px] text-muted bg-panel border border-line px-2 py-0.5 rounded-full font-mono">
             {dateLabel}
           </span>
         )}
@@ -51,15 +58,15 @@ export default function DashboardToolbar({
       {/* Right: Controls */}
       <div className="flex items-center gap-2">
         {/* Date Range — segmented control */}
-        <div className="flex bg-white border border-slate-200 rounded-lg p-0.5 shadow-sm">
+        <div className="flex bg-panel border border-line rounded-md p-0.5 font-mono">
           {DATE_RANGES.map((range) => (
             <button
               key={range.value}
               onClick={() => onDateRangeChange(range.value)}
-              className={`px-2.5 py-1 text-[11px] font-medium rounded-md ${
+              className={`px-2.5 py-1 text-[11px] font-medium rounded-[5px] ${
                 dateRange === range.value
-                  ? "bg-slate-800 text-white"
-                  : "text-slate-500 hover:text-slate-700"
+                  ? "bg-panel-2 text-ink"
+                  : "text-faint hover:text-fg"
               }`}
             >
               {range.label}
@@ -71,7 +78,7 @@ export default function DashboardToolbar({
         <select
           value={channel}
           onChange={(e) => onChannelChange(e.target.value)}
-          className="text-[11px] border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-50 shadow-sm cursor-pointer"
+          className="text-[11px] border border-line rounded-md px-2.5 py-1.5 bg-panel text-fg focus:outline-none focus:border-[#33363d] cursor-pointer"
         >
           {CHANNELS.map((ch) => (
             <option key={ch} value={ch}>
@@ -82,7 +89,7 @@ export default function DashboardToolbar({
 
         {/* Export */}
         <button
-          className="flex items-center gap-1 text-slate-500 hover:text-slate-700 border border-slate-200 bg-white px-2.5 py-1.5 rounded-lg text-[11px] font-medium hover:bg-slate-50 shadow-sm"
+          className="flex items-center gap-1 text-faint hover:text-fg border border-line bg-panel px-2.5 py-1.5 rounded-md text-[11px] font-medium hover:bg-panel-2"
           onClick={() => {
             const blob = new Blob(["导出功能开发中"], { type: "text/plain" });
             const url = URL.createObjectURL(blob);
@@ -100,7 +107,7 @@ export default function DashboardToolbar({
         {/* Refresh */}
         <button
           onClick={onRefresh}
-          className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 border border-slate-200 bg-white shadow-sm"
+          className="text-faint hover:text-fg p-1.5 rounded-md hover:bg-panel-2 border border-line bg-panel"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
         </button>
@@ -109,9 +116,13 @@ export default function DashboardToolbar({
         <button
           onClick={onGenerate}
           disabled={generating}
-          className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-blue-700 disabled:opacity-50 shadow-sm"
+          className="flex items-center gap-1.5 bg-ink text-app px-3 py-1.5 rounded-md text-[11px] font-semibold hover:bg-white disabled:opacity-50"
         >
-          {generating ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+          {generating ? (
+            <RefreshCw className="w-3 h-3 animate-spin" />
+          ) : (
+            <Sparkles className="w-3 h-3" />
+          )}
           {generating ? "生成中" : "生成晨报"}
         </button>
       </div>

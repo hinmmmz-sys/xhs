@@ -25,36 +25,46 @@ function ChangeBadge({ pct, trend }: { pct: number; trend: string }) {
 
   return (
     <span
-      className={`flex items-center gap-0.5 text-xs font-medium ${
-        isFlat
-          ? "text-gray-400"
-          : isUp
-          ? "text-green-600"
-          : "text-red-500"
+      className={`flex items-center justify-end gap-0.5 text-[11px] font-medium font-mono ${
+        isFlat ? "text-fainter" : isUp ? "text-up" : "text-down"
       }`}
     >
       {isUp && <TrendingUp className="w-3 h-3" />}
       {isDown && <TrendingDown className="w-3 h-3" />}
       {isFlat && <Minus className="w-3 h-3" />}
-      {pct > 0 ? "+" : ""}{pct}%
+      {pct > 0 ? "+" : ""}
+      {pct}%
     </span>
   );
 }
 
-function MetricRow({ label, metric }: { label: string; metric: { label: string; current: number; previous: number; change_pct: number; unit: string; trend: string } }) {
+function MetricRow({
+  label,
+  metric,
+}: {
+  label: string;
+  metric: {
+    label: string;
+    current: number;
+    previous: number;
+    change_pct: number;
+    unit: string;
+    trend: string;
+  };
+}) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
-      <span className="text-sm text-gray-500">{label}</span>
+    <div className="flex items-center justify-between py-2 border-b border-line-soft last:border-0">
+      <span className="text-xs text-faint">{label}</span>
       <div className="flex items-center gap-3">
         <div className="text-right">
-          <span className="text-sm font-semibold text-gray-800">
+          <span className="text-sm font-semibold text-fg-strong tabular font-display">
             {formatNum(metric.current, metric.unit)}
           </span>
-          <span className="text-xs text-gray-400 ml-1">{metric.unit}</span>
+          <span className="text-[10px] text-fainter ml-1">{metric.unit}</span>
         </div>
         <div className="w-16 text-right">
           <ChangeBadge pct={metric.change_pct} trend={metric.trend} />
-          <p className="text-xs text-gray-300 mt-0.5">
+          <p className="text-[10px] text-fainter mt-0.5 font-mono">
             上期 {formatNum(metric.previous, metric.unit)}
           </p>
         </div>
@@ -65,20 +75,21 @@ function MetricRow({ label, metric }: { label: string; metric: { label: string; 
 
 export default function ChannelDetailCard({ channel, icon }: ChannelDetailCardProps) {
   const Icon = icon === "live" ? Radio : Video;
-  const gradient = icon === "live"
-    ? "from-red-500 to-orange-500"
-    : "from-purple-500 to-pink-500";
+  const tag = icon === "live" ? "LIVE" : "VIDEO";
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-      <div className="flex items-center gap-2 mb-4">
-        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center`}>
-          <Icon className="w-4 h-4 text-white" />
+    <div className="bg-panel rounded-md p-4 border border-line">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-7 h-7 rounded-md bg-inset border border-line flex items-center justify-center">
+          <Icon className="w-3.5 h-3.5 text-fg" />
         </div>
-        <h3 className="text-base font-semibold text-gray-800">{channel.name}</h3>
+        <h3 className="text-sm font-semibold text-ink">{channel.name}</h3>
+        <span className="ml-auto text-[9px] font-mono text-muted border border-line px-1.5 py-0.5 rounded-[3px]">
+          {tag}
+        </span>
       </div>
 
-      <div className="space-y-1">
+      <div className="space-y-0">
         <MetricRow label="曝光人数" metric={channel.exposure} />
         <MetricRow label="点击人数" metric={channel.clicks} />
         <MetricRow label="访客人数" metric={channel.visitors} />

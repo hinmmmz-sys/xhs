@@ -104,70 +104,72 @@ export default function DashboardPage() {
       />
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 mb-5 text-xs">
+        <div className="bg-down/10 border border-down/30 text-down rounded-md p-3 mb-5 text-xs">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="text-center py-20 text-slate-400">
-          <RefreshCw className="w-7 h-7 animate-spin mx-auto mb-2 text-slate-300" />
+        <div className="text-center py-20 text-fainter">
+          <RefreshCw className="w-7 h-7 animate-spin mx-auto mb-2 text-fainter" />
           <span className="text-xs">加载仪表盘数据...</span>
         </div>
       ) : !overview ? (
-        <div className="bg-white rounded-lg border border-slate-200/70 p-8 text-center text-slate-400">
+        <div className="bg-panel rounded-md border border-line p-8 text-center text-fainter">
           暂无数据
         </div>
       ) : (
         <div className="space-y-4">
-          {/* ===== 第一屏: KPI 总览 + 异常提示 ===== */}
-
-          {/* Anomaly Alert Bar */}
+          {/* ===== 异常提示 ===== */}
           <AnomalyAlertBar alerts={overview.anomaly_alerts} />
 
           {/* KPI Cards — Row 1: 今日总览 */}
           <div>
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wide">今日总览</span>
-              <span className="text-[10px] text-slate-400">· 经营核心指标</span>
+              <span className="text-[10px] font-semibold text-muted uppercase tracking-[0.16em] font-mono">
+                今日总览
+              </span>
+              <span className="text-[10px] text-fainter font-mono">· CORE METRICS</span>
             </div>
             <div className="grid grid-cols-5 gap-3">
-              <MetricCard metric={overview.total_payment} icon={DollarSign} accentColor="blue" />
-              <MetricCard metric={overview.order_count} icon={ShoppingCart} accentColor="green" />
-              <MetricCard metric={overview.click_payment_rate} icon={Percent} accentColor="cyan" />
-              <MetricCard metric={overview.aov} icon={TrendingUpIcon} accentColor="purple" />
-              <MetricCard metric={overview.refund_rate} icon={RotateCcw} accentColor="red" />
+              <MetricCard metric={overview.total_payment} icon={DollarSign} />
+              <MetricCard metric={overview.order_count} icon={ShoppingCart} />
+              <MetricCard metric={overview.click_payment_rate} icon={Percent} />
+              <MetricCard metric={overview.aov} icon={TrendingUpIcon} />
+              <MetricCard metric={overview.refund_rate} icon={RotateCcw} />
             </div>
           </div>
 
           {/* KPI Cards — Row 2: 流量与投放 */}
           <div>
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wide">流量与投放</span>
-              <span className="text-[10px] text-slate-400">· 渠道获客效率</span>
+              <span className="text-[10px] font-semibold text-muted uppercase tracking-[0.16em] font-mono">
+                流量与投放
+              </span>
+              <span className="text-[10px] text-fainter font-mono">· TRAFFIC &amp; ADS</span>
             </div>
             <div className="grid grid-cols-5 gap-3">
-              <MetricCard metric={overview.visitor_count} icon={Users} accentColor="blue" />
-              <MetricCard metric={overview.exposure_count} icon={Eye} accentColor="cyan" />
-              <MetricCard metric={overview.roas} icon={Target} accentColor="green" />
-              <MetricCard metric={overview.cac} icon={UserPlus} accentColor="amber" />
-              <MetricCard metric={overview.stockout_rate} icon={PackageX} accentColor="red" />
+              <MetricCard metric={overview.visitor_count} icon={Users} />
+              <MetricCard metric={overview.exposure_count} icon={Eye} />
+              <MetricCard metric={overview.roas} icon={Target} />
+              <MetricCard metric={overview.cac} icon={UserPlus} />
+              <MetricCard metric={overview.stockout_rate} icon={PackageX} />
             </div>
           </div>
 
-          {/* ===== 第二屏: 核心趋势 + 渠道拆分 ===== */}
-
-          {/* Two-column: Trend (left 2/3) + Channel Bar (right 1/3) */}
+          {/* ===== 核心趋势 + 渠道拆分 ===== */}
           <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2 bg-white rounded-lg border border-slate-200/70 p-4">
+            <div className="col-span-2 bg-panel rounded-md border border-line p-4">
               <div className="flex items-center gap-1.5 mb-3">
-                <TrendingUpIcon className="w-3.5 h-3.5 text-blue-500" />
-                <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wide">核心趋势分析</span>
-                <span className="text-[10px] text-slate-400">· {overview.date_range_label}</span>
+                <TrendingUpIcon className="w-3.5 h-3.5 text-muted" />
+                <span className="text-[10px] font-semibold text-muted uppercase tracking-[0.16em] font-mono">
+                  核心趋势分析
+                </span>
+                <span className="text-[10px] text-fainter font-mono">· {overview.date_range_label}</span>
               </div>
               <TrendChart data={overview.trend} />
             </div>
-            <div className="bg-white rounded-lg border border-slate-200/70 p-4">
+            <div className="bg-panel rounded-md border border-line p-4">
               <ChannelBarChart data={overview.channel_breakdown} />
             </div>
           </div>
@@ -175,8 +177,10 @@ export default function DashboardPage() {
           {/* 渠道自营详情 */}
           <div>
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wide">渠道自营详情</span>
-              <span className="text-[10px] text-slate-400">· 直播 & 短视频</span>
+              <span className="text-[10px] font-semibold text-muted uppercase tracking-[0.16em] font-mono">
+                渠道自营详情
+              </span>
+              <span className="text-[10px] text-fainter font-mono">· 直播 &amp; 短视频</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <ChannelDetailCard channel={overview.live_streaming} icon="live" />
@@ -194,8 +198,10 @@ export default function DashboardPage() {
           {xhsStats && (
             <div>
               <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wide">小红书种草数据</span>
-                <span className="text-[10px] text-slate-400">· 来自 XHS-Downloader</span>
+                <span className="text-[10px] font-semibold text-muted uppercase tracking-[0.16em] font-mono">
+                  小红书种草数据
+                </span>
+                <span className="text-[10px] text-fainter font-mono">· 来自 XHS-Downloader</span>
               </div>
               <div className="space-y-3">
                 <XHSOverviewCard stats={xhsStats} />
@@ -204,26 +210,28 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* ===== 第三屏: 今日结论与动作 ===== */}
+          {/* ===== 今日结论与动作 ===== */}
           <div>
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wide">今日结论与动作</span>
-              <span className="text-[10px] text-slate-400">
+              <span className="text-[10px] font-semibold text-muted uppercase tracking-[0.16em] font-mono">
+                今日结论与动作
+              </span>
+              <span className="text-[10px] text-fainter font-mono">
                 {report ? `· ${report.date}` : "· 暂无晨报"}
               </span>
             </div>
 
             {!report ? (
-              <div className="bg-white rounded-lg border border-slate-200/70 p-6 text-center">
-                <FileText className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                <h3 className="text-xs font-semibold text-slate-600 mb-1">暂无运营晨报</h3>
-                <p className="text-[10px] text-slate-400 mb-3">
-                  点击右上角"生成晨报"按钮使用模拟数据快速生成
+              <div className="bg-panel rounded-md border border-line p-6 text-center">
+                <FileText className="w-8 h-8 text-fainter mx-auto mb-2" />
+                <h3 className="text-xs font-semibold text-fg mb-1">暂无运营晨报</h3>
+                <p className="text-[10px] text-fainter mb-3">
+                  点击右上角&ldquo;生成晨报&rdquo;按钮使用模拟数据快速生成
                 </p>
                 <button
                   onClick={handleGenerate}
                   disabled={generating}
-                  className="inline-flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-blue-700 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 bg-ink text-app px-3 py-1.5 rounded-md text-[11px] font-semibold hover:bg-white disabled:opacity-50"
                 >
                   <Sparkles className="w-3 h-3" />
                   生成晨报
@@ -233,59 +241,59 @@ export default function DashboardPage() {
               <>
                 {/* Stats summary */}
                 <div className="grid grid-cols-4 gap-3 mb-3">
-                  <div className="bg-white rounded-lg border border-slate-200/70 p-3.5">
+                  <div className="bg-panel rounded-md border border-line p-3.5">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] text-slate-500">问题总数</span>
-                      <AlertTriangle className="w-3.5 h-3.5 text-slate-400" />
+                      <span className="text-[10px] text-faint font-mono">问题总数</span>
+                      <AlertTriangle className="w-3.5 h-3.5 text-fainter" />
                     </div>
-                    <div className="text-xl font-bold text-slate-800">{report.issue_count}</div>
+                    <div className="text-xl font-bold text-ink tabular font-display">{report.issue_count}</div>
                   </div>
-                  <div className="bg-red-50/50 rounded-lg border border-red-100 p-3.5">
+                  <div className="bg-panel rounded-md border border-line border-l-2 border-l-down p-3.5">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] text-red-600">高优先级</span>
-                      <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+                      <span className="text-[10px] text-down font-mono">高优先级</span>
+                      <AlertTriangle className="w-3.5 h-3.5 text-down" />
                     </div>
-                    <div className="text-xl font-bold text-red-700">{report.high_count}</div>
+                    <div className="text-xl font-bold text-down tabular font-display">{report.high_count}</div>
                   </div>
-                  <div className="bg-amber-50/50 rounded-lg border border-amber-100 p-3.5">
+                  <div className="bg-panel rounded-md border border-line border-l-2 border-l-warn p-3.5">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] text-amber-600">中优先级</span>
-                      <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                      <span className="text-[10px] text-warn font-mono">中优先级</span>
+                      <AlertTriangle className="w-3.5 h-3.5 text-warn" />
                     </div>
-                    <div className="text-xl font-bold text-amber-700">{report.medium_count}</div>
+                    <div className="text-xl font-bold text-warn tabular font-display">{report.medium_count}</div>
                   </div>
-                  <div className="bg-blue-50/50 rounded-lg border border-blue-100 p-3.5">
+                  <div className="bg-panel rounded-md border border-line border-l-2 border-l-info p-3.5">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] text-blue-600">低优先级</span>
-                      <CheckCircle className="w-3.5 h-3.5 text-blue-400" />
+                      <span className="text-[10px] text-info font-mono">低优先级</span>
+                      <CheckCircle className="w-3.5 h-3.5 text-info" />
                     </div>
-                    <div className="text-xl font-bold text-blue-700">{report.low_count}</div>
+                    <div className="text-xl font-bold text-info tabular font-display">{report.low_count}</div>
                   </div>
                 </div>
 
                 {/* AI Summary */}
-                <div className="bg-white rounded-lg border border-slate-200/70 p-4 mb-3">
+                <div className="bg-panel rounded-md border border-line p-4 mb-3">
                   <div className="flex items-center gap-2 mb-2">
-                    <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
-                    <h3 className="text-xs font-semibold text-slate-700">{report.summary.title}</h3>
+                    <Lightbulb className="w-3.5 h-3.5 text-warn" />
+                    <h3 className="text-xs font-semibold text-fg-strong">{report.summary.title}</h3>
                     {report.summary.ai_powered ? (
-                      <span className="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                      <span className="text-[10px] text-ai border border-ai/30 px-1.5 py-0.5 rounded-[3px] flex items-center gap-0.5 font-mono">
                         <Sparkles className="w-2.5 h-2.5" /> AI
                       </span>
                     ) : (
-                      <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] text-muted border border-line px-1.5 py-0.5 rounded-[3px] font-mono">
                         模板
                       </span>
                     )}
                   </div>
-                  <div className="bg-blue-50/40 rounded-lg p-3.5 text-xs text-slate-700 whitespace-pre-wrap leading-relaxed">
+                  <div className="bg-inset border border-line-soft rounded-[5px] p-3.5 text-xs text-fg whitespace-pre-wrap leading-relaxed">
                     {report.summary.overview}
                   </div>
                 </div>
 
                 {/* Issues / Actions */}
-                <div className="bg-white rounded-lg border border-slate-200/70 p-4">
-                  <h3 className="text-xs font-semibold text-slate-700 mb-3">
+                <div className="bg-panel rounded-md border border-line p-4">
+                  <h3 className="text-xs font-semibold text-fg-strong mb-3">
                     待办事项 ({report.issue_count})
                   </h3>
                   <IssueList issues={report.issues} />

@@ -6,17 +6,8 @@ import type { MetricWithComparison } from "@/lib/types";
 interface MetricCardProps {
   metric: MetricWithComparison;
   icon?: LucideIcon;
-  accentColor?: string; // e.g. "blue", "green", "amber", "red", "purple"
+  accentColor?: string; // 保留 API 兼容（深色主题下统一中性处理）
 }
-
-const COLOR_MAP: Record<string, { bg: string; text: string }> = {
-  blue: { bg: "bg-blue-50", text: "text-blue-500" },
-  green: { bg: "bg-green-50", text: "text-green-500" },
-  amber: { bg: "bg-amber-50", text: "text-amber-500" },
-  red: { bg: "bg-red-50", text: "text-red-500" },
-  purple: { bg: "bg-purple-50", text: "text-purple-500" },
-  cyan: { bg: "bg-cyan-50", text: "text-cyan-500" },
-};
 
 function formatNumber(value: number, unit: string): string {
   if (unit === "元") {
@@ -29,53 +20,48 @@ function formatNumber(value: number, unit: string): string {
   return value.toLocaleString("zh-CN");
 }
 
-export default function MetricCard({ metric, icon: Icon, accentColor = "blue" }: MetricCardProps) {
+export default function MetricCard({ metric, icon: Icon }: MetricCardProps) {
   const isUp = metric.trend === "up";
   const isDown = metric.trend === "down";
   const isFlat = metric.trend === "flat";
 
-  // 退款相关指标上升是坏事
-  const isNegativeMetric = metric.label.includes("退款") || metric.label.includes("缺货");
+  // 退款/缺货类指标上升是坏事
+  const isNegativeMetric =
+    metric.label.includes("退款") || metric.label.includes("缺货");
   const isGood = isFlat ? null : isNegativeMetric ? !isUp : isUp;
 
-  const colors = COLOR_MAP[accentColor] || COLOR_MAP.blue;
+  const dotColor = isFlat ? "bg-fainter" : isGood ? "bg-up" : "bg-down";
+  const deltaColor = isFlat ? "text-fainter" : isGood ? "text-up" : "text-down";
 
   return (
-    <div className="bg-white rounded-lg border border-slate-200/70 p-3.5 hover:border-slate-300 hover:shadow-sm">
-      <div className="flex items-start justify-between mb-2">
-        <span className="text-[11px] text-slate-500 font-medium">{metric.label}</span>
-        {Icon && (
-          <div className={`w-6 h-6 rounded-md ${colors.bg} flex items-center justify-center flex-shrink-0`}>
-            <Icon className={`w-3 h-3 ${colors.text}`} />
-          </div>
+    <div className="bg-panel rounded-md border border-line p-3.5 hover:border-[#2f333b]">
+      <div className="flex items-start justify-between mb-3">
+        <span className="text-[10px] text-faint font-mono tracking-[0.04em]">
+          {metric.label}
+        </span>
+        {Icon ? (
+          <Icon className="w-3.5 h-3.5 text-fainter flex-shrink-0" />
+        ) : (
+          <span className={`w-1.5 h-1.5 rounded-full ${dotColor} mt-1`} />
         )}
       </div>
       <div className="flex items-baseline gap-0.5">
-        <span className="text-xl font-bold text-slate-800 tracking-tight">
+        <span className="text-2xl font-bold text-ink tracking-tight tabular font-display">
           {formatNumber(metric.current, metric.unit)}
         </span>
         {metric.unit && metric.unit !== "" && (
-          <span className="text-[10px] text-slate-400">{metric.unit}</span>
+          <span className="text-[10px] text-fainter">{metric.unit}</span>
         )}
       </div>
-      <div className="flex items-center justify-between mt-1.5">
-        <span className="text-[10px] text-slate-400">
-          上期 {formatNumber(metric.previous, metric.unit)}
-        </span>
-        <span
-          className={`flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
-            isFlat
-              ? "bg-slate-100 text-slate-500"
-              : isGood
-              ? "bg-emerald-50 text-emerald-600"
-              : "bg-red-50 text-red-500"
-          }`}
-        >
+      <div className="flex items-center gap-1.5 mt-2 font-mono">
+        <span className={`flex items-center gap-0.5 text-[11px] font-medium ${deltaColor}`}>
           {isUp && <TrendingUp className="w-2.5 h-2.5" />}
           {isDown && <TrendingDown className="w-2.5 h-2.5" />}
           {isFlat && <Minus className="w-2.5 h-2.5" />}
-          {metric.change_pct > 0 ? "+" : ""}{metric.change_pct}%
+          {metric.change_pct > 0 ? "+" : ""}
+          {metric.change_pct}%
         </span>
+        <span className="text-[10px] text-fainter">vs 上周期</span>
       </div>
     </div>
   );

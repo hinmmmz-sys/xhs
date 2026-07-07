@@ -1,87 +1,115 @@
 @import "tailwindcss";
 
-:root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --sidebar: #0f172a;
-  --card: #ffffff;
-  --border: #e2e8f0;
-  --muted: #64748b;
-  --accent: #3b82f6;
+/* =====================================================================
+   SellerPulse — Grid Terminal 深色主题
+   深色终端 · 发丝网格 · IBM Plex Mono 数据字体 · 交易面板级密度
+   语义色以 @theme 暴露为 Tailwind 工具类：
+     bg-app / bg-sidebar / bg-panel / bg-panel-2
+     border-line / border-line-soft
+     text-ink / text-fg / text-fg-strong / text-muted / text-faint / text-fainter
+     text-up / text-down / text-warn / text-info / text-ai （支持 /透明度）
+     font-display（标题/数值）· font-mono（标签/数字）
+   ===================================================================== */
+
+@theme {
+  /* 背景层次 */
+  --color-app: #0a0b0d;
+  --color-sidebar: #0d0e11;
+  --color-panel: #131418;
+  --color-panel-2: #16181d;
+  --color-inset: #0f1114;
+
+  /* 描边 */
+  --color-line: #23262c;
+  --color-line-soft: #1c1e22;
+
+  /* 文本 */
+  --color-ink: #eef0f2;
+  --color-fg-strong: #e6e7ea;
+  --color-fg: #c8cbd1;
+  --color-muted: #8b8e95;
+  --color-faint: #7f8288;
+  --color-fainter: #5a5d64;
+
+  /* 语义信号（低饱和，仅用于涨跌/状态） */
+  --color-up: #74a98a;
+  --color-down: #cf7b6f;
+  --color-warn: #cba45f;
+  --color-info: #8ab4d8;
+  --color-ai: #a78bce;
+
+  /* 字体 */
+  --font-display: var(--font-space-grotesk), "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--color-app);
+  color: var(--color-fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar — subtle, professional */
+/* 数字统一等宽对齐 */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 细滚动条 */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #2a2d33;
   border-radius: 3px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #3a3d44;
 }
 
-/* Smooth transitions on interactive elements */
-button, a, select {
+/* 交互过渡 */
+button,
+a,
+select,
+input {
   transition: all 0.15s ease;
 }
 
-/* Recharts tooltip refinement */
+/* Recharts 深色适配 */
 .recharts-default-tooltip {
-  border-radius: 8px !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06) !important;
+  background: #131418 !important;
+  border-radius: 6px !important;
+  border: 1px solid #23262c !important;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.6) !important;
+  color: #e6e7ea !important;
 }
-
+.recharts-tooltip-item {
+  color: #c8cbd1 !important;
+}
 .recharts-cartesian-axis-tick-value {
-  fill: #94a3b8 !important;
+  fill: #5a5d64 !important;
 }
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+.recharts-legend-item-text {
+  color: #8b8e95 !important;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* 深色下的原生下拉/输入 */
+select,
+input,
+textarea {
+  color-scheme: dark;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+select option {
+  background: #131418;
+  color: #e6e7ea;
 }

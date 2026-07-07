@@ -34,7 +34,6 @@ export default function ReportDetailPage() {
     setSendingEmail(true);
     setEmailMsg("");
     try {
-      // 重新生成并发送邮件
       await generateReport({ useMock: false, sendEmail: true });
       setEmailMsg("邮件已发送至配置的邮箱地址");
     } catch {
@@ -45,21 +44,21 @@ export default function ReportDetailPage() {
 
   if (loading) {
     return (
-      <div className="p-8">
-        <div className="text-center py-20 text-gray-400">加载中...</div>
+      <div className="px-6 py-6">
+        <div className="text-center py-20 text-fainter">加载中...</div>
       </div>
     );
   }
 
   if (!report) {
     return (
-      <div className="p-8">
-        <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-          <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-lg font-semibold text-gray-600 mb-2">报告不存在</h2>
+      <div className="px-6 py-6">
+        <div className="bg-panel rounded-md border border-line p-12 text-center">
+          <AlertCircle className="w-14 h-14 text-fainter mx-auto mb-4" />
+          <h2 className="text-base font-semibold text-fg mb-2">报告不存在</h2>
           <button
             onClick={() => router.push("/reports")}
-            className="text-blue-600 text-sm hover:underline"
+            className="text-info text-sm hover:underline"
           >
             返回报告列表
           </button>
@@ -69,32 +68,32 @@ export default function ReportDetailPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="px-6 py-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.push("/reports")}
-            className="text-gray-400 hover:text-gray-600"
+            className="w-8 h-8 border border-line rounded-md flex items-center justify-center text-muted hover:text-fg hover:bg-panel-2"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">
+            <h1 className="text-lg font-bold text-ink tracking-tight font-display">
               {report.summary.title || "运营晨报"}
             </h1>
             <div className="flex items-center gap-3 mt-1">
-              <span className="flex items-center gap-1 text-sm text-gray-500">
-                <Calendar className="w-3.5 h-3.5" />
+              <span className="flex items-center gap-1 text-[11px] text-faint font-mono">
+                <Calendar className="w-3 h-3" />
                 {report.created_at}
               </span>
               {report.summary.ai_powered ? (
-                <span className="flex items-center gap-1 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
-                  <Sparkles className="w-3 h-3" />
+                <span className="flex items-center gap-1 text-[9px] font-mono text-ai border border-ai/30 px-1.5 py-0.5 rounded-[3px]">
+                  <Sparkles className="w-2.5 h-2.5" />
                   AI 生成
                 </span>
               ) : (
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                <span className="text-[9px] font-mono text-muted border border-line px-1.5 py-0.5 rounded-[3px]">
                   模板生成
                 </span>
               )}
@@ -104,7 +103,7 @@ export default function ReportDetailPage() {
         <button
           onClick={handleSendEmail}
           disabled={sendingEmail}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="flex items-center gap-2 bg-ink text-app px-4 py-2 rounded-md text-xs font-semibold hover:bg-white disabled:opacity-50"
         >
           <Mail className="w-4 h-4" />
           {sendingEmail ? "发送中..." : "发送邮件"}
@@ -112,44 +111,44 @@ export default function ReportDetailPage() {
       </div>
 
       {emailMsg && (
-        <div className="bg-blue-50 border border-blue-200 text-blue-700 rounded-lg p-3 mb-6 text-sm">
+        <div className="bg-info/10 border border-info/30 text-info rounded-md p-3 mb-6 text-sm">
           {emailMsg}
         </div>
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl shadow-sm p-5 text-center">
-          <div className="text-3xl font-bold text-gray-800">{report.issue_count}</div>
-          <div className="text-xs text-gray-500 mt-1">问题总数</div>
+      <div className="grid grid-cols-4 gap-3 mb-4">
+        <div className="bg-panel rounded-md border border-line p-4 text-center">
+          <div className="text-2xl font-bold text-ink tabular font-display">{report.issue_count}</div>
+          <div className="text-[10px] text-faint mt-1 font-mono">问题总数</div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-5 text-center border-l-4 border-red-500">
-          <div className="text-3xl font-bold text-red-600">{report.high_count}</div>
-          <div className="text-xs text-gray-500 mt-1">高优先级</div>
+        <div className="bg-panel rounded-md border border-line border-l-2 border-l-down p-4 text-center">
+          <div className="text-2xl font-bold text-down tabular font-display">{report.high_count}</div>
+          <div className="text-[10px] text-faint mt-1 font-mono">高优先级</div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-5 text-center border-l-4 border-amber-500">
-          <div className="text-3xl font-bold text-amber-600">{report.medium_count}</div>
-          <div className="text-xs text-gray-500 mt-1">中优先级</div>
+        <div className="bg-panel rounded-md border border-line border-l-2 border-l-warn p-4 text-center">
+          <div className="text-2xl font-bold text-warn tabular font-display">{report.medium_count}</div>
+          <div className="text-[10px] text-faint mt-1 font-mono">中优先级</div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-5 text-center border-l-4 border-blue-500">
-          <div className="text-3xl font-bold text-blue-600">{report.low_count}</div>
-          <div className="text-xs text-gray-500 mt-1">低优先级</div>
+        <div className="bg-panel rounded-md border border-line border-l-2 border-l-info p-4 text-center">
+          <div className="text-2xl font-bold text-info tabular font-display">{report.low_count}</div>
+          <div className="text-[10px] text-faint mt-1 font-mono">低优先级</div>
         </div>
       </div>
 
       {/* Overview */}
       {report.summary.overview && (
-        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 mb-6 border border-blue-100">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">晨报概览</h2>
-          <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+        <div className="bg-panel rounded-md border border-line p-5 mb-4">
+          <h2 className="text-[11px] font-semibold text-fg mb-3">晨报概览</h2>
+          <div className="bg-inset border border-line-soft rounded-[5px] p-3.5 text-sm text-fg whitespace-pre-wrap leading-relaxed">
             {report.summary.overview}
           </div>
         </div>
       )}
 
       {/* Issues */}
-      <div className="bg-white rounded-xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+      <div className="bg-panel rounded-md border border-line p-5">
+        <h2 className="text-[11px] font-semibold text-fg mb-4">
           问题详情 ({report.issue_count})
         </h2>
         <IssueList issues={report.issues} />

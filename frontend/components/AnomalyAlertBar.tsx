@@ -7,30 +7,27 @@ import type { AnomalyAlert } from "@/lib/types";
 const LEVEL_CONFIG = {
   critical: {
     icon: AlertCircle,
-    bg: "bg-red-50/60",
-    border: "border-l-red-500",
-    text: "text-red-700",
-    iconColor: "text-red-500",
-    badge: "bg-red-100 text-red-600",
-    label: "严重",
+    tint: "bg-[#141013]",
+    badge: "text-down border border-down/30",
+    title: "text-[#e8c9c4]",
+    desc: "text-[#9a8582]",
+    label: "CRITICAL",
   },
   warning: {
     icon: AlertTriangle,
-    bg: "bg-amber-50/60",
-    border: "border-l-amber-500",
-    text: "text-amber-700",
-    iconColor: "text-amber-500",
-    badge: "bg-amber-100 text-amber-600",
-    label: "预警",
+    tint: "bg-[#14120d]",
+    badge: "text-warn border border-warn/30",
+    title: "text-[#e5d6b5]",
+    desc: "text-[#8f8567]",
+    label: "WARNING",
   },
   info: {
     icon: Info,
-    bg: "bg-blue-50/60",
-    border: "border-l-blue-500",
-    text: "text-blue-700",
-    iconColor: "text-blue-500",
-    badge: "bg-blue-100 text-blue-600",
-    label: "提示",
+    tint: "bg-inset",
+    badge: "text-muted border border-line",
+    title: "text-fg",
+    desc: "text-faint",
+    label: "INFO",
   },
 };
 
@@ -43,7 +40,7 @@ export default function AnomalyAlertBar({ alerts }: { alerts: AnomalyAlert[] }) 
   if (visible.length === 0) return null;
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-px bg-line border border-line rounded-md overflow-hidden">
       {alerts.map((alert, idx) => {
         if (dismissed.has(idx)) return null;
         const config = LEVEL_CONFIG[alert.level];
@@ -52,23 +49,26 @@ export default function AnomalyAlertBar({ alerts }: { alerts: AnomalyAlert[] }) 
         return (
           <div
             key={idx}
-            className={`flex items-center gap-3 ${config.bg} ${config.border} border-l-2 border-t-0 border-r-0 border-b-0 rounded-r-lg px-3 py-2`}
+            className={`flex items-center gap-3 ${config.tint} px-3.5 py-2.5`}
           >
-            <Icon className={`w-4 h-4 ${config.iconColor} flex-shrink-0`} />
-            <div className="flex-1 min-w-0 flex items-center gap-2">
-              <span className={`text-[10px] font-semibold ${config.badge} px-1.5 py-0.5 rounded flex-shrink-0`}>
-                {config.label}
-              </span>
-              <span className={`text-xs font-medium ${config.text} truncate`}>
-                {alert.title}
-              </span>
-              <span className={`text-xs ${config.text} opacity-60 truncate hidden sm:inline`}>
-                {alert.description}
-              </span>
-            </div>
+            <span
+              className={`text-[9px] font-semibold font-mono tracking-[0.1em] px-1.5 py-0.5 rounded-[3px] flex-shrink-0 ${config.badge}`}
+            >
+              {config.label}
+            </span>
+            <Icon className={`w-3.5 h-3.5 ${config.desc} flex-shrink-0`} />
+            <span className={`text-xs font-medium ${config.title} truncate`}>
+              {alert.title}
+            </span>
+            <span className={`text-[11px] font-mono ${config.desc} truncate hidden sm:inline`}>
+              {alert.description}
+            </span>
+            <span className="ml-auto text-[11px] font-mono text-faint hidden md:inline">
+              {alert.source} →
+            </span>
             <button
               onClick={() => setDismissed((prev) => new Set(prev).add(idx))}
-              className="text-slate-400 hover:text-slate-600 flex-shrink-0"
+              className="text-fainter hover:text-fg flex-shrink-0"
             >
               <X className="w-3.5 h-3.5" />
             </button>

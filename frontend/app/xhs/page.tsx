@@ -12,7 +12,6 @@ import {
   Video,
   Image,
   Images,
-  TrendingUp,
   AlertTriangle,
   Download,
   Search,
@@ -22,17 +21,17 @@ import {
 import { getXHSStats, getXHSNotes, syncXHS, searchXHS } from "@/lib/api";
 import type { XHSStats, XHSNoteRecord } from "@/lib/types";
 import XHSOverviewCard from "@/components/XHSOverviewCard";
-import XHSTopNotesTable from "@/components/XHSTopNotesTable";
 
 function formatNum(value: number): string {
   if (value >= 10000) return `${(value / 10000).toFixed(1)}万`;
   return value.toLocaleString("zh-CN");
 }
 
-const TYPE_CONFIG: Record<string, { icon: any; color: string; bg: string }> = {
-  "视频": { icon: Video, color: "text-blue-500", bg: "bg-blue-50" },
-  "图文": { icon: Image, color: "text-green-500", bg: "bg-green-50" },
-  "图集": { icon: Images, color: "text-purple-500", bg: "bg-purple-50" },
+// 深色终端：类型用灰阶区分
+const TYPE_CONFIG: Record<string, { icon: any; color: string }> = {
+  视频: { icon: Video, color: "#e6e7ea" },
+  图文: { icon: Image, color: "#9a9da4" },
+  图集: { icon: Images, color: "#54575e" },
 };
 
 export default function XHSPage() {
@@ -41,24 +40,26 @@ export default function XHSPage() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [sortBy, setSortBy] = useState("engagement");
-  
+
   // 搜索相关状态
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searching, setSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState<Array<{
-    id: string;
-    title: string;
-    description: string;
-    type: string;
-    author: string;
-    likes: string;
-    comments: string;
-    favorites: string;
-    shares: string;
-    publish_time: string;
-    url: string;
-    tags: string;
-  }>>([]);
+  const [searchResults, setSearchResults] = useState<
+    Array<{
+      id: string;
+      title: string;
+      description: string;
+      type: string;
+      author: string;
+      likes: string;
+      comments: string;
+      favorites: string;
+      shares: string;
+      publish_time: string;
+      url: string;
+      tags: string;
+    }>
+  >([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
 
   const loadData = useCallback(async (sort: string) => {
@@ -82,7 +83,7 @@ export default function XHSPage() {
 
   const handleSearch = async () => {
     if (!searchKeyword.trim()) return;
-    
+
     setSearching(true);
     setShowSearchResults(true);
     try {
@@ -109,9 +110,9 @@ export default function XHSPage() {
   // 内容类型分布
   const typeDistribution = stats
     ? [
-        { name: "视频", value: stats.video_count, color: "#3b82f6" },
-        { name: "图文", value: stats.image_count, color: "#10b981" },
-        { name: "图集", value: stats.gallery_count, color: "#8b5cf6" },
+        { name: "视频", value: stats.video_count, color: TYPE_CONFIG["视频"].color },
+        { name: "图文", value: stats.image_count, color: TYPE_CONFIG["图文"].color },
+        { name: "图集", value: stats.gallery_count, color: TYPE_CONFIG["图集"].color },
       ].filter((t) => t.value > 0)
     : [];
 
@@ -122,11 +123,11 @@ export default function XHSPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400 font-medium">XHS Insights</span>
-          <ChevronRight className="w-3 h-3 text-slate-300" />
-          <span className="text-xs text-slate-600 font-medium">小红书种草分析</span>
+          <span className="text-xs text-faint font-medium">XHS Insights</span>
+          <ChevronRight className="w-3 h-3 text-fainter" />
+          <span className="text-xs text-fg font-medium">小红书种草分析</span>
           {stats && (
-            <span className="ml-2 text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+            <span className="ml-2 text-[10px] text-muted bg-panel border border-line px-2 py-0.5 rounded-full font-mono">
               {stats.total_notes} 篇作品
             </span>
           )}
@@ -135,7 +136,7 @@ export default function XHSPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="text-[11px] border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-50 shadow-sm cursor-pointer"
+            className="text-[11px] border border-line rounded-md px-2.5 py-1.5 bg-panel text-fg focus:outline-none focus:border-[#33363d] cursor-pointer"
           >
             <option value="engagement">按互动量</option>
             <option value="liked">按点赞数</option>
@@ -144,14 +145,18 @@ export default function XHSPage() {
           <button
             onClick={handleSync}
             disabled={syncing}
-            className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-blue-700 disabled:opacity-50 shadow-sm"
+            className="flex items-center gap-1.5 bg-ink text-app px-3 py-1.5 rounded-md text-[11px] font-semibold hover:bg-white disabled:opacity-50"
           >
-            {syncing ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
+            {syncing ? (
+              <RefreshCw className="w-3 h-3 animate-spin" />
+            ) : (
+              <Download className="w-3 h-3" />
+            )}
             {syncing ? "同步中" : "同步数据"}
           </button>
           <button
             onClick={() => loadData(sortBy)}
-            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 border border-slate-200 bg-white shadow-sm"
+            className="text-faint hover:text-fg p-1.5 rounded-md hover:bg-panel-2 border border-line bg-panel"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
           </button>
@@ -159,21 +164,21 @@ export default function XHSPage() {
       </div>
 
       {loading ? (
-        <div className="text-center py-20 text-slate-400">
-          <RefreshCw className="w-7 h-7 animate-spin mx-auto mb-2 text-slate-300" />
+        <div className="text-center py-20 text-fainter">
+          <RefreshCw className="w-7 h-7 animate-spin mx-auto mb-2 text-fainter" />
           <span className="text-xs">加载小红书数据...</span>
         </div>
       ) : !stats ? (
-        <div className="bg-white rounded-lg border border-slate-200/70 p-8 text-center text-slate-400">
+        <div className="bg-panel rounded-md border border-line p-8 text-center text-fainter">
           暂无数据，请先在 XHS-Downloader 中采集作品
         </div>
       ) : (
         <div className="space-y-4">
           {/* ===== 搜索栏 ===== */}
-          <div className="bg-white rounded-lg border border-slate-200/70 p-4">
+          <div className="bg-panel rounded-md border border-line p-4">
             <div className="flex items-center gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fainter" />
                 <input
                   type="text"
                   value={searchKeyword}
@@ -183,14 +188,14 @@ export default function XHSPage() {
                       handleSearch();
                     }
                   }}
-                  placeholder="搜索小红书帖子...例如：外劳招聘、香港工作、澳洲打工"
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="搜索小红书帖子...例如：真丝连衣裙、通勤穿搭、面料测评"
+                  className="w-full pl-10 pr-4 py-2.5 border border-line rounded-md text-sm bg-inset text-fg-strong placeholder:text-fainter focus:outline-none focus:border-[#33363d]"
                 />
               </div>
               <button
                 onClick={handleSearch}
                 disabled={searching || !searchKeyword.trim()}
-                className="flex items-center gap-2 bg-red-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                className="flex items-center gap-2 bg-ink text-app px-5 py-2.5 rounded-md text-sm font-semibold hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {searching ? (
                   <>
@@ -211,31 +216,31 @@ export default function XHSPage() {
                     setSearchResults([]);
                     setSearchKeyword("");
                   }}
-                  className="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-100"
+                  className="text-fainter hover:text-fg p-2 rounded-md hover:bg-panel-2"
                 >
                   <X className="w-4 h-4" />
                 </button>
               )}
             </div>
             {showSearchResults && searchResults.length > 0 && (
-              <div className="mt-3 text-xs text-slate-500">
-                找到 <span className="font-semibold text-slate-700">{searchResults.length}</span> 条相关结果
+              <div className="mt-3 text-xs text-faint">
+                找到 <span className="font-semibold text-fg-strong">{searchResults.length}</span> 条相关结果
               </div>
             )}
           </div>
 
           {/* ===== 搜索结果 ===== */}
           {showSearchResults && (
-            <div className="bg-white rounded-lg border border-slate-200/70 p-4">
+            <div className="bg-panel rounded-md border border-line p-4">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Search className="w-4 h-4 text-red-500" />
-                  <h4 className="text-sm font-semibold text-slate-700">搜索结果</h4>
-                  <span className="text-xs text-slate-400">“{searchKeyword}”</span>
+                  <Search className="w-4 h-4 text-muted" />
+                  <h4 className="text-sm font-semibold text-fg">搜索结果</h4>
+                  <span className="text-xs text-fainter font-mono">&ldquo;{searchKeyword}&rdquo;</span>
                 </div>
               </div>
               {searchResults.length === 0 ? (
-                <div className="text-center py-8 text-slate-400 text-sm">
+                <div className="text-center py-8 text-fainter text-sm">
                   未找到相关帖子，请尝试其他关键词
                 </div>
               ) : (
@@ -246,40 +251,36 @@ export default function XHSPage() {
                       href={result.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block p-4 border border-slate-200 rounded-lg hover:border-red-300 hover:bg-red-50/30 transition-all group"
+                      className="block p-4 border border-line rounded-md hover:border-[#33363d] hover:bg-panel-2/40 transition-all group"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <h5 className="text-sm font-medium text-slate-700 group-hover:text-red-600 line-clamp-2">
+                          <h5 className="text-sm font-medium text-fg-strong group-hover:text-info line-clamp-2">
                             {result.title || "无标题"}
                           </h5>
                           {result.description && (
-                            <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                              {result.description}
-                            </p>
+                            <p className="text-xs text-muted mt-1 line-clamp-2">{result.description}</p>
                           )}
-                          <div className="flex items-center gap-3 mt-2 text-xs text-slate-400">
+                          <div className="flex items-center gap-3 mt-2 text-[10px] text-fainter font-mono">
                             <span>{result.author}</span>
                             <span>{result.publish_time}</span>
-                            {result.tags && (
-                              <span className="text-slate-300">{result.tags}</span>
-                            )}
+                            {result.tags && <span className="text-fainter">{result.tags}</span>}
                           </div>
                         </div>
-                        <div className="flex-shrink-0 flex items-center gap-3 text-xs">
+                        <div className="flex-shrink-0 flex items-center gap-3 text-xs font-mono">
                           <div className="text-center">
-                            <Heart className="w-3.5 h-3.5 text-red-400 mx-auto" />
-                            <span className="text-slate-600 font-medium">{result.likes}</span>
+                            <Heart className="w-3.5 h-3.5 text-down mx-auto" />
+                            <span className="text-fg font-medium">{result.likes}</span>
                           </div>
                           <div className="text-center">
-                            <MessageCircle className="w-3.5 h-3.5 text-blue-400 mx-auto" />
-                            <span className="text-slate-600 font-medium">{result.comments}</span>
+                            <MessageCircle className="w-3.5 h-3.5 text-info mx-auto" />
+                            <span className="text-fg font-medium">{result.comments}</span>
                           </div>
                           <div className="text-center">
-                            <Bookmark className="w-3.5 h-3.5 text-yellow-400 mx-auto" />
-                            <span className="text-slate-600 font-medium">{result.favorites}</span>
+                            <Bookmark className="w-3.5 h-3.5 text-warn mx-auto" />
+                            <span className="text-fg font-medium">{result.favorites}</span>
                           </div>
-                          <ExternalLink className="w-4 h-4 text-slate-300 group-hover:text-red-400" />
+                          <ExternalLink className="w-4 h-4 text-fainter group-hover:text-info" />
                         </div>
                       </div>
                     </a>
@@ -288,14 +289,15 @@ export default function XHSPage() {
               )}
             </div>
           )}
+
           {/* ===== 概览统计 ===== */}
           <XHSOverviewCard stats={stats} />
 
           {/* ===== 类型分布 + 作者排行 ===== */}
           <div className="grid grid-cols-3 gap-3">
             {/* 内容类型分布 */}
-            <div className="bg-white rounded-lg border border-slate-200/70 p-4">
-              <h4 className="text-[11px] font-semibold text-slate-600 mb-3">内容类型分布</h4>
+            <div className="bg-panel rounded-md border border-line p-4">
+              <h4 className="text-[11px] font-semibold text-fg mb-3">内容类型分布</h4>
               <div className="space-y-2.5">
                 {typeDistribution.map((type) => {
                   const pct = totalNotes > 0 ? (type.value / totalNotes) * 100 : 0;
@@ -304,15 +306,18 @@ export default function XHSPage() {
                     <div key={type.name}>
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-1.5">
-                          {config && <config.icon className={`w-3 h-3 ${config.color}`} />}
-                          <span className="text-[11px] text-slate-500">{type.name}</span>
+                          {config && <config.icon className="w-3 h-3 text-muted" />}
+                          <span className="text-[11px] text-faint">{type.name}</span>
                         </div>
-                        <span className="text-[11px] font-semibold text-slate-700">
-                          {type.value} <span className="text-slate-400 font-normal">({pct.toFixed(0)}%)</span>
+                        <span className="text-[11px] font-semibold text-fg font-mono">
+                          {type.value} <span className="text-fainter font-normal">({pct.toFixed(0)}%)</span>
                         </span>
                       </div>
-                      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: type.color }} />
+                      <div className="h-1.5 bg-line-soft rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full"
+                          style={{ width: `${pct}%`, backgroundColor: type.color }}
+                        />
                       </div>
                     </div>
                   );
@@ -322,6 +327,7 @@ export default function XHSPage() {
               <div className="mt-4 flex items-center justify-center">
                 <div className="relative w-24 h-24">
                   <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#1c1e22" strokeWidth="12" />
                     {(() => {
                       let offset = 0;
                       return typeDistribution.map((type) => {
@@ -330,7 +336,9 @@ export default function XHSPage() {
                         const circle = (
                           <circle
                             key={type.name}
-                            cx="50" cy="50" r="40"
+                            cx="50"
+                            cy="50"
+                            r="40"
                             fill="none"
                             stroke={type.color}
                             strokeWidth="12"
@@ -344,55 +352,66 @@ export default function XHSPage() {
                     })()}
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-lg font-bold text-slate-700">{totalNotes}</span>
-                    <span className="text-[9px] text-slate-400">总作品</span>
+                    <span className="text-lg font-bold text-ink font-display">{totalNotes}</span>
+                    <span className="text-[9px] text-fainter font-mono">总作品</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* 作者排行榜 */}
-            <div className="col-span-2 bg-white rounded-lg border border-slate-200/70 p-4">
+            <div className="col-span-2 bg-panel rounded-md border border-line p-4">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-[11px] font-semibold text-slate-600">作者排行榜</h4>
-                <span className="text-[10px] text-slate-400">按互动量排序</span>
+                <h4 className="text-[11px] font-semibold text-fg">作者排行榜</h4>
+                <span className="text-[10px] text-fainter font-mono">按互动量排序</span>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-[10px] text-slate-400 border-b border-slate-100">
-                      <th className="text-left font-medium py-1.5 px-2">#</th>
-                      <th className="text-left font-medium py-1.5 px-2">作者</th>
-                      <th className="text-center font-medium py-1.5 px-2">作品数</th>
-                      <th className="text-right font-medium py-1.5 px-2">总互动</th>
-                      <th className="text-right font-medium py-1.5 px-2">篇均互动</th>
-                      <th className="text-left font-medium py-1.5 px-2 w-32">互动占比</th>
+                    <tr className="text-[9px] font-mono text-fainter border-b border-line-soft">
+                      <th className="text-left font-normal py-1.5 px-2">#</th>
+                      <th className="text-left font-normal py-1.5 px-2">作者</th>
+                      <th className="text-center font-normal py-1.5 px-2">作品数</th>
+                      <th className="text-right font-normal py-1.5 px-2">总互动</th>
+                      <th className="text-right font-normal py-1.5 px-2">篇均互动</th>
+                      <th className="text-left font-normal py-1.5 px-2 w-32">互动占比</th>
                     </tr>
                   </thead>
                   <tbody>
                     {stats.top_authors.map((author, idx) => {
                       const avgEng = author.notes > 0 ? Math.round(author.engagement / author.notes) : 0;
-                      const sharePct = stats.total_engagement > 0 ? (author.engagement / stats.total_engagement) * 100 : 0;
+                      const sharePct =
+                        stats.total_engagement > 0
+                          ? (author.engagement / stats.total_engagement) * 100
+                          : 0;
                       const isTop = idx < 3;
                       return (
-                        <tr key={idx} className="border-b border-slate-50 hover:bg-slate-50/50">
+                        <tr key={idx} className="border-b border-line-soft last:border-0 hover:bg-panel-2/50">
                           <td className="py-2 px-2">
-                            <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${
-                              isTop ? "bg-red-100 text-red-600" : "bg-slate-100 text-slate-500"
-                            }`}>
+                            <span
+                              className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold font-mono ${
+                                isTop ? "bg-down/15 text-down" : "bg-line-soft text-faint"
+                              }`}
+                            >
                               {idx + 1}
                             </span>
                           </td>
-                          <td className="py-2 px-2 text-[11px] font-medium text-slate-700">{author.name}</td>
-                          <td className="text-center py-2 px-2 text-[11px] text-slate-500">{author.notes}</td>
-                          <td className="text-right py-2 px-2 text-[11px] font-semibold text-slate-700">{formatNum(author.engagement)}</td>
-                          <td className="text-right py-2 px-2 text-[11px] text-slate-500">{formatNum(avgEng)}</td>
+                          <td className="py-2 px-2 text-[11px] font-medium text-fg-strong">{author.name}</td>
+                          <td className="text-center py-2 px-2 text-[11px] text-muted font-mono">{author.notes}</td>
+                          <td className="text-right py-2 px-2 text-[11px] font-semibold text-fg-strong font-mono">
+                            {formatNum(author.engagement)}
+                          </td>
+                          <td className="text-right py-2 px-2 text-[11px] text-muted font-mono">
+                            {formatNum(avgEng)}
+                          </td>
                           <td className="py-2 px-2">
                             <div className="flex items-center gap-1.5">
-                              <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-400 rounded-full" style={{ width: `${sharePct}%` }} />
+                              <div className="flex-1 h-1.5 bg-line-soft rounded-full overflow-hidden">
+                                <div className="h-full bg-info rounded-full" style={{ width: `${sharePct}%` }} />
                               </div>
-                              <span className="text-[10px] text-slate-400 w-8 text-right">{sharePct.toFixed(0)}%</span>
+                              <span className="text-[10px] text-fainter w-8 text-right font-mono">
+                                {sharePct.toFixed(0)}%
+                              </span>
                             </div>
                           </td>
                         </tr>
@@ -405,41 +424,44 @@ export default function XHSPage() {
           </div>
 
           {/* ===== 全量笔记表 ===== */}
-          <div className="bg-white rounded-lg border border-slate-200/70 p-4">
+          <div className="bg-panel rounded-md border border-line p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-1.5">
-                <Flame className="w-3.5 h-3.5 text-red-500" />
-                <h4 className="text-[11px] font-semibold text-slate-600">全部作品</h4>
-                <span className="text-[10px] text-slate-400">· {notes.length} 篇</span>
+                <Flame className="w-3.5 h-3.5 text-muted" />
+                <h4 className="text-[11px] font-semibold text-fg">全部作品</h4>
+                <span className="text-[10px] text-fainter font-mono">· {notes.length} 篇</span>
               </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-[10px] text-slate-400 border-b border-slate-100">
-                    <th className="text-left font-medium py-2 px-2">#</th>
-                    <th className="text-left font-medium py-2 px-2">标题</th>
-                    <th className="text-left font-medium py-2 px-2">作者</th>
-                    <th className="text-center font-medium py-2 px-2">类型</th>
-                    <th className="text-right font-medium py-2 px-2"><Heart className="w-3 h-3 inline" /></th>
-                    <th className="text-right font-medium py-2 px-2"><MessageCircle className="w-3 h-3 inline" /></th>
-                    <th className="text-right font-medium py-2 px-2"><Share2 className="w-3 h-3 inline" /></th>
-                    <th className="text-right font-medium py-2 px-2"><Bookmark className="w-3 h-3 inline" /></th>
-                    <th className="text-right font-medium py-2 px-2">互动量</th>
-                    <th className="text-right font-medium py-2 px-2">发布时间</th>
+                  <tr className="text-[9px] font-mono text-fainter border-b border-line-soft">
+                    <th className="text-left font-normal py-2 px-2">#</th>
+                    <th className="text-left font-normal py-2 px-2">标题</th>
+                    <th className="text-left font-normal py-2 px-2">作者</th>
+                    <th className="text-center font-normal py-2 px-2">类型</th>
+                    <th className="text-right font-normal py-2 px-2"><Heart className="w-3 h-3 inline" /></th>
+                    <th className="text-right font-normal py-2 px-2"><MessageCircle className="w-3 h-3 inline" /></th>
+                    <th className="text-right font-normal py-2 px-2"><Share2 className="w-3 h-3 inline" /></th>
+                    <th className="text-right font-normal py-2 px-2"><Bookmark className="w-3 h-3 inline" /></th>
+                    <th className="text-right font-normal py-2 px-2">互动量</th>
+                    <th className="text-right font-normal py-2 px-2">发布时间</th>
                   </tr>
                 </thead>
                 <tbody>
                   {notes.map((note, idx) => {
-                    const engagement = note.liked_count + note.comment_count + note.share_count + note.collect_count;
+                    const engagement =
+                      note.liked_count + note.comment_count + note.share_count + note.collect_count;
                     const TypeIcon = TYPE_CONFIG[note.note_type]?.icon || Image;
                     const isHot = idx < 3;
                     return (
-                      <tr key={note.note_id} className="border-b border-slate-50 hover:bg-slate-50/50">
+                      <tr key={note.note_id} className="border-b border-line-soft last:border-0 hover:bg-panel-2/50">
                         <td className="py-2 px-2">
-                          <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${
-                            isHot ? "bg-red-100 text-red-600" : "bg-slate-100 text-slate-500"
-                          }`}>
+                          <span
+                            className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold font-mono ${
+                              isHot ? "bg-down/15 text-down" : "bg-line-soft text-faint"
+                            }`}
+                          >
                             {idx + 1}
                           </span>
                         </td>
@@ -448,26 +470,28 @@ export default function XHSPage() {
                             href={note.note_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[11px] font-medium text-slate-700 hover:text-blue-600 hover:underline truncate block"
+                            className="text-[11px] font-medium text-fg-strong hover:text-info hover:underline truncate block"
                           >
                             {note.title || "无标题"}
                           </a>
                           {note.tags && (
-                            <div className="text-[10px] text-slate-400 mt-0.5 truncate">{note.tags}</div>
+                            <div className="text-[10px] text-fainter mt-0.5 truncate font-mono">{note.tags}</div>
                           )}
                         </td>
-                        <td className="py-2 px-2 text-[11px] text-slate-500 whitespace-nowrap">{note.author_nickname}</td>
+                        <td className="py-2 px-2 text-[11px] text-muted whitespace-nowrap">{note.author_nickname}</td>
                         <td className="text-center py-2 px-2">
-                          <TypeIcon className="w-3 h-3 text-slate-400 inline" />
+                          <TypeIcon className="w-3 h-3 text-fainter inline" />
                         </td>
-                        <td className="text-right py-2 px-2 text-[11px] text-slate-600">{formatNum(note.liked_count)}</td>
-                        <td className="text-right py-2 px-2 text-[11px] text-slate-600">{formatNum(note.comment_count)}</td>
-                        <td className="text-right py-2 px-2 text-[11px] text-slate-600">{formatNum(note.share_count)}</td>
-                        <td className="text-right py-2 px-2 text-[11px] text-slate-600">{formatNum(note.collect_count)}</td>
-                        <td className={`text-right py-2 px-2 text-[11px] font-semibold ${isHot ? "text-red-600" : "text-slate-700"}`}>
+                        <td className="text-right py-2 px-2 text-[11px] text-fg font-mono">{formatNum(note.liked_count)}</td>
+                        <td className="text-right py-2 px-2 text-[11px] text-fg font-mono">{formatNum(note.comment_count)}</td>
+                        <td className="text-right py-2 px-2 text-[11px] text-fg font-mono">{formatNum(note.share_count)}</td>
+                        <td className="text-right py-2 px-2 text-[11px] text-fg font-mono">{formatNum(note.collect_count)}</td>
+                        <td className={`text-right py-2 px-2 text-[11px] font-semibold font-mono ${isHot ? "text-down" : "text-fg-strong"}`}>
                           {formatNum(engagement)}
                         </td>
-                        <td className="text-right py-2 px-2 text-[10px] text-slate-400 whitespace-nowrap">{note.publish_time}</td>
+                        <td className="text-right py-2 px-2 text-[10px] text-fainter whitespace-nowrap font-mono">
+                          {note.publish_time}
+                        </td>
                       </tr>
                     );
                   })}
@@ -478,31 +502,37 @@ export default function XHSPage() {
 
           {/* ===== 低互动预警 ===== */}
           {stats.low_engagement_notes.length > 0 && (
-            <div className="bg-amber-50/40 rounded-lg border border-amber-100 p-4">
+            <div className="bg-warn/5 rounded-md border border-warn/25 p-4">
               <div className="flex items-center gap-1.5 mb-3">
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
-                <span className="text-[11px] font-semibold text-amber-700 uppercase tracking-wide">低互动预警</span>
-                <span className="text-[10px] text-amber-600">互动量 &lt; 50 的作品</span>
+                <AlertTriangle className="w-3.5 h-3.5 text-warn" />
+                <span className="text-[10px] font-semibold text-warn uppercase tracking-[0.14em] font-mono">
+                  低互动预警
+                </span>
+                <span className="text-[10px] text-warn/80 font-mono">互动量 &lt; 50 的作品</span>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {stats.low_engagement_notes.map((note) => {
-                  const engagement = note.liked_count + note.comment_count + note.share_count + note.collect_count;
+                  const engagement =
+                    note.liked_count + note.comment_count + note.share_count + note.collect_count;
                   return (
-                    <div key={note.note_id} className="flex items-center gap-2 bg-white/60 rounded-md p-2 border border-amber-50">
+                    <div
+                      key={note.note_id}
+                      className="flex items-center gap-2 bg-panel/60 rounded-md p-2 border border-line-soft"
+                    >
                       <div className="flex-1 min-w-0">
                         <a
                           href={note.note_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[11px] font-medium text-slate-600 hover:text-blue-600 truncate block"
+                          className="text-[11px] font-medium text-fg hover:text-info truncate block"
                         >
                           {note.title || "无标题"}
                         </a>
-                        <div className="text-[10px] text-slate-400">{note.author_nickname}</div>
+                        <div className="text-[10px] text-fainter font-mono">{note.author_nickname}</div>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <div className="text-[11px] font-bold text-amber-600">{engagement}</div>
-                        <div className="text-[9px] text-slate-400">互动</div>
+                        <div className="text-[11px] font-bold text-warn font-mono">{engagement}</div>
+                        <div className="text-[9px] text-fainter font-mono">互动</div>
                       </div>
                     </div>
                   );

@@ -24,22 +24,24 @@ export default function ReportsPage() {
   }, []);
 
   return (
-    <div className="p-8">
+    <div className="px-6 py-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">报告历史</h1>
-        <p className="text-sm text-gray-500 mt-1">查看所有历史运营晨报</p>
+        <h1 className="text-lg font-bold text-ink tracking-tight font-display">
+          报告历史 <span className="text-fainter font-normal text-sm">Reports</span>
+        </h1>
+        <p className="text-[11px] text-faint mt-1 font-mono">查看所有历史运营晨报</p>
       </div>
 
       {loading ? (
-        <div className="text-center py-20 text-gray-400">加载中...</div>
+        <div className="text-center py-20 text-fainter">加载中...</div>
       ) : reports.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-          <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-lg font-semibold text-gray-600 mb-2">暂无报告</h2>
-          <p className="text-sm text-gray-400">生成第一份运营晨报后将会显示在这里</p>
+        <div className="bg-panel rounded-md border border-line p-12 text-center">
+          <FileText className="w-14 h-14 text-fainter mx-auto mb-4" />
+          <h2 className="text-base font-semibold text-fg mb-2">暂无报告</h2>
+          <p className="text-sm text-fainter">生成第一份运营晨报后将会显示在这里</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           {reports.map((report) => (
             <ReportCard key={report.id} report={report} />
           ))}

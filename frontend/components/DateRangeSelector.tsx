@@ -17,16 +17,16 @@ interface DateRangeSelectorProps {
 export default function DateRangeSelector({ value, onChange }: DateRangeSelectorProps) {
   return (
     <div className="flex items-center gap-2">
-      <Clock className="w-4 h-4 text-gray-400" />
-      <div className="flex bg-gray-100 rounded-lg p-1">
+      <Clock className="w-4 h-4 text-fainter" />
+      <div className="flex bg-panel border border-line rounded-md p-0.5 font-mono">
         {DATE_RANGES.map((range) => (
           <button
             key={range.value}
             onClick={() => onChange(range.value)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-[5px] ${
               value === range.value
-                ? "bg-white text-blue-600 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-panel-2 text-ink"
+                : "text-faint hover:text-fg"
             }`}
           >
             {range.label}

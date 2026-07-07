@@ -8,37 +8,32 @@ import {
   Upload,
   FileText,
   Settings,
-  Activity,
   Flame,
   ChevronRight,
 } from "lucide-react";
 
 const NAV_GROUPS = [
   {
-    label: "概览",
+    label: "概览 · OVERVIEW",
     items: [
-      { href: "/", label: "Dashboard", icon: LayoutDashboard, desc: "运营仪表盘" },
-      { href: "/analytics", label: "Analytics", icon: BarChart3, desc: "数据分析" },
+      { href: "/", label: "Dashboard", icon: LayoutDashboard, desc: "仪表盘" },
+      { href: "/analytics", label: "Analytics", icon: BarChart3, desc: "分析" },
     ],
   },
   {
-    label: "运营",
+    label: "运营 · OPS",
     items: [
-      { href: "/upload", label: "Data Import", icon: Upload, desc: "数据上传" },
-      { href: "/reports", label: "Reports", icon: FileText, desc: "报告历史" },
+      { href: "/upload", label: "Data Import", icon: Upload, desc: "上传" },
+      { href: "/reports", label: "Reports", icon: FileText, desc: "报告" },
     ],
   },
   {
-    label: "营销",
-    items: [
-      { href: "/xhs", label: "XHS Insights", icon: Flame, desc: "小红书种草" },
-    ],
+    label: "营销 · GROWTH",
+    items: [{ href: "/xhs", label: "XHS Insights", icon: Flame, desc: "种草" }],
   },
   {
-    label: "系统",
-    items: [
-      { href: "/settings", label: "Settings", icon: Settings, desc: "系统设置" },
-    ],
+    label: "系统 · SYSTEM",
+    items: [{ href: "/settings", label: "Settings", icon: Settings, desc: "设置" }],
   },
 ];
 
@@ -46,16 +41,20 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-60 bg-slate-900 flex flex-col z-50 border-r border-slate-800">
+    <aside className="fixed left-0 top-0 h-screen w-60 bg-sidebar flex flex-col z-50 border-r border-line-soft">
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-slate-800">
+      <div className="px-5 py-[18px] border-b border-line-soft">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-            <Activity className="w-5 h-5 text-white" />
+          <div className="w-[30px] h-[30px] bg-[#111318] border border-[#33363d] rounded-md flex items-center justify-center flex-shrink-0">
+            <div className="w-[11px] h-[11px] bg-ink rounded-[2px]" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-sm font-bold text-white tracking-tight">SellerPulse</h1>
-            <p className="text-[10px] text-slate-500 leading-tight">运营晨报 Agent</p>
+            <h1 className="text-[13px] font-bold text-ink tracking-tight font-display">
+              SellerPulse
+            </h1>
+            <p className="text-[9px] text-fainter leading-tight font-mono uppercase tracking-[0.14em]">
+              Ops Agent
+            </p>
           </div>
         </div>
       </div>
@@ -64,8 +63,8 @@ export default function Sidebar() {
       <nav className="flex-1 px-3 py-4 overflow-y-auto">
         {NAV_GROUPS.map((group) => (
           <div key={group.label} className="mb-5">
-            <div className="px-3 mb-1.5">
-              <span className="text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
+            <div className="px-2 mb-1.5">
+              <span className="text-[9px] font-mono text-fainter uppercase tracking-[0.18em]">
                 {group.label}
               </span>
             </div>
@@ -77,18 +76,26 @@ export default function Sidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`group flex items-center gap-2.5 px-3 py-2 rounded-lg ${
+                    className={`group flex items-center gap-2.5 px-2.5 py-2 rounded-md ${
                       isActive
-                        ? "bg-blue-600/15 text-blue-400"
-                        : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"
+                        ? "bg-panel-2 border border-line text-ink"
+                        : "text-muted hover:bg-panel/60 hover:text-fg-strong"
                     }`}
                   >
-                    <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? "text-blue-400" : ""}`} />
-                    <div className="flex-1 min-w-0">
-                      <span className="text-xs font-medium block leading-tight">{item.label}</span>
-                      <span className="text-[10px] text-slate-600 leading-tight block">{item.desc}</span>
-                    </div>
-                    {isActive && <ChevronRight className="w-3 h-3 text-blue-400 flex-shrink-0" />}
+                    <Icon
+                      className={`w-4 h-4 flex-shrink-0 ${
+                        isActive ? "text-ink" : ""
+                      }`}
+                    />
+                    <span className="text-xs font-medium leading-tight whitespace-nowrap">
+                      {item.label}
+                    </span>
+                    <span className="text-[10px] text-fainter leading-tight ml-auto font-mono">
+                      {item.desc}
+                    </span>
+                    {isActive && (
+                      <ChevronRight className="w-3 h-3 text-ink flex-shrink-0" />
+                    )}
                   </Link>
                 );
               })}
@@ -98,12 +105,12 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer / Status */}
-      <div className="px-3 py-3 border-t border-slate-800">
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/40">
-          <div className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" />
+      <div className="px-3 py-3 border-t border-line-soft">
+        <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-inset border border-line-soft">
+          <div className="w-1.5 h-1.5 rounded-full bg-up flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-medium text-slate-300">系统运行中</p>
-            <p className="text-[9px] text-slate-600">v1.0.0 · AI Ready</p>
+            <p className="text-[10px] font-medium text-fg">系统运行中</p>
+            <p className="text-[9px] text-fainter font-mono">v1.0.0 · AI READY</p>
           </div>
         </div>
       </div>
