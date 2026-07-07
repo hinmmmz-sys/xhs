@@ -1,0 +1,47 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.qoder/
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Node.js
+node_modules/
+.next/
+out/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
+# 环境配置 & 密钥（含 API Key，禁止提交）
+.env
+.env.local
+.env*.local
+backend/app/data/runtime_config.json
+
+# 日志
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# 数据库
+*.db
+*.sqlite3
+
+# 临时文件
+*.tmp
+*.bak

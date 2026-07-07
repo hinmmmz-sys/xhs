@@ -1,0 +1,157 @@
+{
+  "id": "afe9662a",
+  "date": "2026-07-07",
+  "created_at": "2026-07-07 12:42:46",
+  "issues": [
+    {
+      "type": "ad_waste",
+      "severity": "high",
+      "sku": "Campaign-B",
+      "target": "desk accessories",
+      "description": "Campaign-B 关键词 \"desk accessories\" 昨日花费 $37.50，点击 47 次，但 0 订单",
+      "recommended_action": "建议检查搜索词报告，添加否定关键词或降低 \"desk accessories\" 的竞价，避免持续无效花费",
+      "raw_data": {
+        "campaign_name": "Campaign-B",
+        "keyword": "desk accessories",
+        "spend": 37.5,
+        "clicks": 47,
+        "orders": 0,
+        "acos": 0.0
+      }
+    },
+    {
+      "type": "negative_review",
+      "severity": "high",
+      "sku": "SKU-C",
+      "target": "Wireless Phone Charger Stand",
+      "description": "Wireless Phone Charger Stand (SKU-C) 收到 2 条差评：Product arrived damaged(2星); Stopped working after 2 days(1星)",
+      "recommended_action": "评论提到包装/破损问题，建议检查 FBA 入仓批次和包装材料，联系亚马逊调查物流损坏",
+      "raw_data": {
+        "sku": "SKU-C",
+        "product_name": "Wireless Phone Charger Stand",
+        "reviews": [
+          {
+            "review_id": "R100001",
+            "rating": 2,
+            "title": "Product arrived damaged",
+            "body": "The packaging was completely broken when I received it. The product itself seems okay but the box was torn and the stand was scratched. Very disappointed with the packaging quality."
+          },
+          {
+            "review_id": "R100002",
+            "rating": 1,
+            "title": "Stopped working after 2 days",
+            "body": "Charger worked fine for the first two days then completely died. Not worth the money."
+          }
+        ]
+      }
+    },
+    {
+      "type": "conversion_drop",
+      "severity": "high",
+      "sku": "SKU-D",
+      "target": "Monitor Stand Riser",
+      "description": "Monitor Stand Riser (SKU-D) 转化率 2.00%，较 7 日均值 3.08% 下降 35.1%",
+      "recommended_action": "建议检查：1) Buy Box 是否丢失；2) 价格是否被竞品 undercut；3) 是否有差评影响；4) Listing 内容是否被篡改",
+      "raw_data": {
+        "sku": "SKU-D",
+        "conversion_rate": 2.0,
+        "cr_7d_avg": 3.08,
+        "cr_change_pct": -35.1,
+        "buy_box_price": 34.99,
+        "sessions": 250
+      }
+    },
+    {
+      "type": "inventory_low_stock",
+      "severity": "medium",
+      "sku": "SKU-A",
+      "target": "Desktop Organizer Pro",
+      "description": "Desktop Organizer Pro (SKU-A) 库存仅剩 120 件，日均销量 15.0，可售天数 8 天",
+      "recommended_action": "库存仅够 8 天，建议立即补货",
+      "raw_data": {
+        "sku": "SKU-A",
+        "fba_in_stock": 120,
+        "daily_sales_avg": 15.0,
+        "days_of_supply": 8.0,
+        "inbound_qty": 0
+      }
+    },
+    {
+      "type": "inventory_low_stock",
+      "severity": "medium",
+      "sku": "SKU-D",
+      "target": "Monitor Stand Riser",
+      "description": "Monitor Stand Riser (SKU-D) 库存仅剩 96 件，日均销量 8.0，可售天数 12 天",
+      "recommended_action": "库存仅够 12 天，建议立即补货",
+      "raw_data": {
+        "sku": "SKU-D",
+        "fba_in_stock": 96,
+        "daily_sales_avg": 8.0,
+        "days_of_supply": 12.0,
+        "inbound_qty": 0
+      }
+    },
+    {
+      "type": "ad_waste",
+      "severity": "medium",
+      "sku": "Campaign-C",
+      "target": "wireless organizer",
+      "description": "Campaign-C 关键词 \"wireless organizer\" 昨日花费 $28.00，点击 42 次，但 0 订单",
+      "recommended_action": "建议检查搜索词报告，添加否定关键词或降低 \"wireless organizer\" 的竞价，避免持续无效花费",
+      "raw_data": {
+        "campaign_name": "Campaign-C",
+        "keyword": "wireless organizer",
+        "spend": 28.0,
+        "clicks": 42,
+        "orders": 0,
+        "acos": 0.0
+      }
+    },
+    {
+      "type": "negative_review",
+      "severity": "medium",
+      "sku": "SKU-D",
+      "target": "Monitor Stand Riser",
+      "description": "Monitor Stand Riser (SKU-D) 收到 1 条差评：Flimsy and wobbly(2星)",
+      "recommended_action": "评论提到产品稳固性问题，建议优化产品设计或材料，考虑迭代升级",
+      "raw_data": {
+        "sku": "SKU-D",
+        "product_name": "Monitor Stand Riser",
+        "reviews": [
+          {
+            "review_id": "R100005",
+            "rating": 2,
+            "title": "Flimsy and wobbly",
+            "body": "The stand is not sturdy at all. My monitor wobbles every time I type. Would not recommend."
+          }
+        ]
+      }
+    },
+    {
+      "type": "conversion_drop",
+      "severity": "medium",
+      "sku": "SKU-F",
+      "target": "Desk Lamp LED",
+      "description": "Desk Lamp LED (SKU-F) 转化率 2.22%，较 7 日均值 3.09% 下降 28.2%",
+      "recommended_action": "建议检查：1) Buy Box 是否丢失；2) 价格是否被竞品 undercut；3) 是否有差评影响；4) Listing 内容是否被篡改",
+      "raw_data": {
+        "sku": "SKU-F",
+        "conversion_rate": 2.22,
+        "cr_7d_avg": 3.09,
+        "cr_change_pct": -28.2,
+        "buy_box_price": 22.99,
+        "sessions": 180
+      }
+    }
+  ],
+  "summary": {
+    "title": "2026-07-06 运营晨报",
+    "overview": "今日检测到 8 项异常，其中 3 项 HIGH 级。核心风险集中在 SKU-D（Monitor Stand Riser），同时出现转化率暴跌、差评、低库存三重叠加问题，需优先处置。两个广告活动（Campaign-B/C）合计每日浪费约 $65.50，建议立即优化否定关键词。SKU-C 出现物流破损类差评，建议排查供应链包装环节。\n\n优先行动：\n  - 【紧急】立即排查 SKU-D 转化率暴跌原因，并启动补货流程（库存仅剩 96 件，可售 12 天），同时跟进差评『Flimsy and wobbly』是否引发消费者信任下降\n  - 【紧急】暂停或大幅下调 Campaign-B「desk accessories」及 Campaign-C「wireless organizer」关键词竞价，每日合计浪费 $65.50 且零转化\n  - 【紧急】联系亚马逊及供应商排查 SKU-C 物流破损问题，调取该批次包装记录，必要时发起索赔\n\n问题分析：\n  1. Campaign-B「desk accessories」CTR 正常（约 1.28%），但 0 转化表明流量与产品匹配度低，属于精准度问题而非曝光问题。 → 立即将该词移入 Exact Match 或降低竞价 50%；同时下载搜索词报告，将不相关搜索词批量添加为否定关键词；建议替换为更精准的长尾词如「desk organizer accessories」。\n  2. SKU-C 收到『到货破损』与『2天故障』两类差评，属于典型的供应链质量/物流问题，单次差评可接受但 2 天内连续出现需警惕批次性缺陷。 → 1) 立即联系 FBA 仓调取该批次入库照片；2) 联系供应商排查包装缓冲材料是否变更；3) 对该 SKU 开启 Vine 计划 5-10 条评论以稀释差评影响；4) 检查是否需要发起 SAFE-T 索赔。\n  3. SKU-D 转化率从 3.08% 骤降至 2.00%（-35.1%），叠加同期出现的『结构松散摇晃』差评，初步判断差评冲击为主要诱因，同时伴随库存不足风险。 → 1) 通过 Helium 10 或 Brand Analytics 检查 Buy Box 与价格变动；2) 核查 Listing 主图、标题、A+ 内容是否有异常；3) 该 SKU 同时出现库存预警，需立即提交补货单避免断货放大转化率跌幅；4) 客服主动联系留下 2 星评价的买家，争取修改/删除差评。\n  4. SKU-A 日均销量 15 件，120 件库存仅够 8 天，已逼近断货警戒线（通常 14 天）。如不补货将造成广告停投与排名下滑。 → 今日内提交紧急补货单，走空运或快递补货 500 件以上；同步下调该 SKU 广告预算 30%，避免断货后广告仍在烧钱。\n  5. SKU-D 可售天数 12 天，虽然未达紧急级别，但叠加转化率下滑风险，若转化持续走低可能导致日销下降、库存压力加剧。 → 建议本周内提交补货单 300 件，同时密切关注转化率变化趋势，若 3 天内未恢复至 2.5% 以上需同步下调广告预算。\n  6. Campaign-C「wireless organizer」与产品（SKU-D 显示器支架）语义不匹配，42 次点击 0 转化属于典型无效流量。 → 立即在 Campaign-C 中将「wireless organizer」添加为 Negative Exact 或 Negative Phrase；同步审查该广告组下其他关键词的搜索词报告，清理高花费低转化词。\n  7. SKU-D 收到『Flimsy and wobbly』评价，指向产品结构稳定性缺陷，可能与近期转化率下滑存在直接关联，需评估是否为单例反馈还是产品共性问题。 → 1) 通过 ReviewMeta 验证评论真实性；2) 调取退货原因数据验证是否集中于结构问题；3) 中短期：优化包装说明与卖点主图强调『sturdy』；4) 长期：与工厂沟通升级底座结构或加重配重设计。\n  8. SKU-F 转化率从 3.09% 降至 2.22%（-28.2%），跌幅中等，尚未触发 HIGH 级，但需排查是否进入下行通道。 → 1) 检查 Buy Box 状态与价格竞争力；2) 调取最近 3 天 Session 与点击率数据，若 CTR 也同步下滑则多为 Listing/价格问题，若 CTR 正常则多为转化环节（如评论、竞品）问题；3) 关注 2-3 天趋势再决定是否降价干预。",
+    "ai_powered": true,
+    "raw_text": "<think>Let me analyze all the issues and create a structured morning report.\n\nIssues:\n1. HIGH - ad_waste - Campaign-B, \"desk accessories\" - $37.50 spent, 47 clicks, 0 orders\n2. HIGH - negative_review - SKU-C Wireless Phone Charger Stand - 2 negative reviews (product damaged, stopped working)\n3. HIGH - conversion_drop - SKU-D Monitor Stand Riser - 2.00% vs 3.08% avg, -35.1%\n4. MEDIUM - inventory_low_stock - SKU-A Desktop Organizer Pro - 120 units, 8 days\n5. MEDIUM - inventory_low_stock - SKU-D Monitor Stand Riser - 96 units, 12 days\n6. MEDIUM - ad_waste - Campaign-C, \"wireless organizer\" - $28.00 spent, 42 clicks, 0 orders\n7. MEDIUM - negative_review - SKU-D Monitor Stand Riser - 1 negative review (flimsy/wobbly)\n8. MEDIUM - conversion_drop - SKU-F Desk Lamp LED - 2.22% vs 3.09% avg, -28.2%\n\nKey cross-issue observations:\n- SKU-D has THREE issues simultaneously: conversion drop, low inventory, AND negative review. This is a critical compound issue.\n- SKU-C has damaged product reviews - logistics/packaging issue\n- Two ad waste issues totaling $65.50/day wasted spend\n\nPriority actions should be:\n1. SKU-D compound issue - the most critical as it affects a product with conversion drop + negative review + low inventory\n2. Ad waste - $65.50/day is burning money, quick fix\n3. SKU-C damaged product - quality control issue\n\nLet me structure this properly.</think>\n\n```json\n{\n  \"title\": \"2026-07-06 运营晨报\",\n  \"overview\": \"今日检测到 8 项异常，其中 3 项 HIGH 级。核心风险集中在 SKU-D（Monitor Stand Riser），同时出现转化率暴跌、差评、低库存三重叠加问题，需优先处置。两个广告活动（Campaign-B/C）合计每日浪费约 $65.50，建议立即优化否定关键词。SKU-C 出现物流破损类差评，建议排查供应链包装环节。\",\n  \"priority_actions\": [\n    \"【紧急】立即排查 SKU-D 转化率暴跌原因，并启动补货流程（库存仅剩 96 件，可售 12 天），同时跟进差评『Flimsy and wobbly』是否引发消费者信任下降\",\n    \"【紧急】暂停或大幅下调 Campaign-B「desk accessories」及 Campaign-C「wireless organizer」关键词竞价，每日合计浪费 $65.50 且零转化\",\n    \"【紧急】联系亚马逊及供应商排查 SKU-C 物流破损问题，调取该批次包装记录，必要时发起索赔\"\n  ],\n  \"issue_analyses\": [\n    {\n      \"issue_index\": 1,\n      \"analysis\": \"Campaign-B「desk accessories」CTR 正常（约 1.28%），但 0 转化表明流量与产品匹配度低，属于精准度问题而非曝光问题。\",\n      \"action\": \"立即将该词移入 Exact Match 或降低竞价 50%；同时下载搜索词报告，将不相关搜索词批量添加为否定关键词；建议替换为更精准的长尾词如「desk organizer accessories」。\"\n    },\n    {\n      \"issue_index\": 2,\n      \"analysis\": \"SKU-C 收到『到货破损』与『2天故障』两类差评，属于典型的供应链质量/物流问题，单次差评可接受但 2 天内连续出现需警惕批次性缺陷。\",\n      \"action\": \"1) 立即联系 FBA 仓调取该批次入库照片；2) 联系供应商排查包装缓冲材料是否变更；3) 对该 SKU 开启 Vine 计划 5-10 条评论以稀释差评影响；4) 检查是否需要发起 SAFE-T 索赔。\"\n    },\n    {\n      \"issue_index\": 3,\n      \"analysis\": \"SKU-D 转化率从 3.08% 骤降至 2.00%（-35.1%），叠加同期出现的『结构松散摇晃』差评，初步判断差评冲击为主要诱因，同时伴随库存不足风险。\",\n      \"action\": \"1) 通过 Helium 10 或 Brand Analytics 检查 Buy Box 与价格变动；2) 核查 Listing 主图、标题、A+ 内容是否有异常；3) 该 SKU 同时出现库存预警，需立即提交补货单避免断货放大转化率跌幅；4) 客服主动联系留下 2 星评价的买家，争取修改/删除差评。\"\n    },\n    {\n      \"issue_index\": 4,\n      \"analysis\": \"SKU-A 日均销量 15 件，120 件库存仅够 8 天，已逼近断货警戒线（通常 14 天）。如不补货将造成广告停投与排名下滑。\",\n      \"action\": \"今日内提交紧急补货单，走空运或快递补货 500 件以上；同步下调该 SKU 广告预算 30%，避免断货后广告仍在烧钱。\"\n    },\n    {\n      \"issue_index\": 5,\n      \"analysis\": \"SKU-D 可售天数 12 天，虽然未达紧急级别，但叠加转化率下滑风险，若转化持续走低可能导致日销下降、库存压力加剧。\",\n      \"action\": \"建议本周内提交补货单 300 件，同时密切关注转化率变化趋势，若 3 天内未恢复至 2.5% 以上需同步下调广告预算。\"\n    },\n    {\n      \"issue_index\": 6,\n      \"analysis\": \"Campaign-C「wireless organizer」与产品（SKU-D 显示器支架）语义不匹配，42 次点击 0 转化属于典型无效流量。\",\n      \"action\": \"立即在 Campaign-C 中将「wireless organizer」添加为 Negative Exact 或 Negative Phrase；同步审查该广告组下其他关键词的搜索词报告，清理高花费低转化词。\"\n    },\n    {\n      \"issue_index\": 7,\n      \"analysis\": \"SKU-D 收到『Flimsy and wobbly』评价，指向产品结构稳定性缺陷，可能与近期转化率下滑存在直接关联，需评估是否为单例反馈还是产品共性问题。\",\n      \"action\": \"1) 通过 ReviewMeta 验证评论真实性；2) 调取退货原因数据验证是否集中于结构问题；3) 中短期：优化包装说明与卖点主图强调『sturdy』；4) 长期：与工厂沟通升级底座结构或加重配重设计。\"\n    },\n    {\n      \"issue_index\": 8,\n      \"analysis\": \"SKU-F 转化率从 3.09% 降至 2.22%（-28.2%），跌幅中等，尚未触发 HIGH 级，但需排查是否进入下行通道。\",\n      \"action\": \"1) 检查 Buy Box 状态与价格竞争力；2) 调取最近 3 天 Session 与点击率数据，若 CTR 也同步下滑则多为 Listing/价格问题，若 CTR 正常则多为转化环节（如评论、竞品）问题；3) 关注 2-3 天趋势再决定是否降价干预。\"\n    }\n  ]\n}\n```"
+  },
+  "issue_count": 8,
+  "high_count": 3,
+  "medium_count": 5,
+  "low_count": 0
+}

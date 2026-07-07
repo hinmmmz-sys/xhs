@@ -1,0 +1,7 @@
+date,sku,product_name,units,sessions,conversions,conversion_rate,cr_7d_avg,cr_change_pct,buy_box_price
+2026-07-05,SKU-A,Desktop Organizer Pro,15,320,15,4.69,4.8,-2.3,29.99
+2026-07-05,SKU-B,Cable Management Box,12,280,12,4.29,4.1,4.6,19.99
+2026-07-05,SKU-C,Wireless Phone Charger Stand,8,190,8,4.21,4.35,-3.2,24.99
+2026-07-05,SKU-D,Monitor Stand Riser,5,250,5,2.0,3.08,-35.1,34.99
+2026-07-05,SKU-E,Adjustable Laptop Stand,10,230,10,4.35,4.2,3.6,27.99
+2026-07-05,SKU-F,Desk Lamp LED,4,180,4,2.22,3.09,-28.2,22.99

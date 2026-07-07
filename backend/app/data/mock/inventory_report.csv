@@ -1,0 +1,7 @@
+sku,product_name,fba_in_stock,daily_sales_avg,days_of_supply,inbound_qty,status
+SKU-A,Desktop Organizer Pro,120,15.0,8.0,0,active
+SKU-B,Cable Management Box,850,12.0,70.8,200,active
+SKU-C,Wireless Phone Charger Stand,430,8.5,50.6,100,active
+SKU-D,Monitor Stand Riser,96,8.0,12.0,0,active
+SKU-E,Adjustable Laptop Stand,620,10.0,62.0,150,active
+SKU-F,Desk Lamp LED,380,6.0,63.3,80,active

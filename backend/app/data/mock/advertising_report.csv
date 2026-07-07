@@ -1,0 +1,8 @@
+date,campaign_name,campaign_id,keyword,match_type,impressions,clicks,spend,sales,orders,acos
+2026-07-05,Campaign-A,CMP-001,kitchen organizer,Broad,3200,85,42.5,186.2,6,22.8
+2026-07-05,Campaign-B,CMP-002,desk accessories,Broad,1800,47,37.5,0.0,0,0.0
+2026-07-05,Campaign-C,CMP-003,wireless organizer,Exact,5600,42,28.0,0.0,0,0.0
+2026-07-05,Campaign-D,CMP-004,cable management,Phrase,2100,53,21.0,95.4,4,22.0
+2026-07-05,Campaign-E,CMP-005,office supplies,Broad,8900,120,56.0,312.8,11,17.9
+2026-07-05,Campaign-A,CMP-001,kitchen rack,Phrase,1500,32,16.0,68.0,3,23.5
+2026-07-05,Campaign-F,CMP-006,storage box,Broad,3400,65,15.5,12.0,1,129.2

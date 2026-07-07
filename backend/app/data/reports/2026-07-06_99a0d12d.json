@@ -1,0 +1,157 @@
+{
+  "id": "99a0d12d",
+  "date": "2026-07-06",
+  "created_at": "2026-07-06 12:08:00",
+  "issues": [
+    {
+      "type": "ad_waste",
+      "severity": "high",
+      "sku": "Campaign-B",
+      "target": "desk accessories",
+      "description": "Campaign-B 关键词 \"desk accessories\" 昨日花费 $37.50，点击 47 次，但 0 订单",
+      "recommended_action": "建议检查搜索词报告，添加否定关键词或降低 \"desk accessories\" 的竞价，避免持续无效花费",
+      "raw_data": {
+        "campaign_name": "Campaign-B",
+        "keyword": "desk accessories",
+        "spend": 37.5,
+        "clicks": 47,
+        "orders": 0,
+        "acos": 0.0
+      }
+    },
+    {
+      "type": "negative_review",
+      "severity": "high",
+      "sku": "SKU-C",
+      "target": "Wireless Phone Charger Stand",
+      "description": "Wireless Phone Charger Stand (SKU-C) 收到 2 条差评：Product arrived damaged(2星); Stopped working after 2 days(1星)",
+      "recommended_action": "评论提到包装/破损问题，建议检查 FBA 入仓批次和包装材料，联系亚马逊调查物流损坏",
+      "raw_data": {
+        "sku": "SKU-C",
+        "product_name": "Wireless Phone Charger Stand",
+        "reviews": [
+          {
+            "review_id": "R100001",
+            "rating": 2,
+            "title": "Product arrived damaged",
+            "body": "The packaging was completely broken when I received it. The product itself seems okay but the box was torn and the stand was scratched. Very disappointed with the packaging quality."
+          },
+          {
+            "review_id": "R100002",
+            "rating": 1,
+            "title": "Stopped working after 2 days",
+            "body": "Charger worked fine for the first two days then completely died. Not worth the money."
+          }
+        ]
+      }
+    },
+    {
+      "type": "conversion_drop",
+      "severity": "high",
+      "sku": "SKU-D",
+      "target": "Monitor Stand Riser",
+      "description": "Monitor Stand Riser (SKU-D) 转化率 2.00%，较 7 日均值 3.08% 下降 35.1%",
+      "recommended_action": "建议检查：1) Buy Box 是否丢失；2) 价格是否被竞品 undercut；3) 是否有差评影响；4) Listing 内容是否被篡改",
+      "raw_data": {
+        "sku": "SKU-D",
+        "conversion_rate": 2.0,
+        "cr_7d_avg": 3.08,
+        "cr_change_pct": -35.1,
+        "buy_box_price": 34.99,
+        "sessions": 250
+      }
+    },
+    {
+      "type": "inventory_low_stock",
+      "severity": "medium",
+      "sku": "SKU-A",
+      "target": "Desktop Organizer Pro",
+      "description": "Desktop Organizer Pro (SKU-A) 库存仅剩 120 件，日均销量 15.0，可售天数 8 天",
+      "recommended_action": "库存仅够 8 天，建议立即补货",
+      "raw_data": {
+        "sku": "SKU-A",
+        "fba_in_stock": 120,
+        "daily_sales_avg": 15.0,
+        "days_of_supply": 8.0,
+        "inbound_qty": 0
+      }
+    },
+    {
+      "type": "inventory_low_stock",
+      "severity": "medium",
+      "sku": "SKU-D",
+      "target": "Monitor Stand Riser",
+      "description": "Monitor Stand Riser (SKU-D) 库存仅剩 96 件，日均销量 8.0，可售天数 12 天",
+      "recommended_action": "库存仅够 12 天，建议立即补货",
+      "raw_data": {
+        "sku": "SKU-D",
+        "fba_in_stock": 96,
+        "daily_sales_avg": 8.0,
+        "days_of_supply": 12.0,
+        "inbound_qty": 0
+      }
+    },
+    {
+      "type": "ad_waste",
+      "severity": "medium",
+      "sku": "Campaign-C",
+      "target": "wireless organizer",
+      "description": "Campaign-C 关键词 \"wireless organizer\" 昨日花费 $28.00，点击 42 次，但 0 订单",
+      "recommended_action": "建议检查搜索词报告，添加否定关键词或降低 \"wireless organizer\" 的竞价，避免持续无效花费",
+      "raw_data": {
+        "campaign_name": "Campaign-C",
+        "keyword": "wireless organizer",
+        "spend": 28.0,
+        "clicks": 42,
+        "orders": 0,
+        "acos": 0.0
+      }
+    },
+    {
+      "type": "negative_review",
+      "severity": "medium",
+      "sku": "SKU-D",
+      "target": "Monitor Stand Riser",
+      "description": "Monitor Stand Riser (SKU-D) 收到 1 条差评：Flimsy and wobbly(2星)",
+      "recommended_action": "评论提到产品稳固性问题，建议优化产品设计或材料，考虑迭代升级",
+      "raw_data": {
+        "sku": "SKU-D",
+        "product_name": "Monitor Stand Riser",
+        "reviews": [
+          {
+            "review_id": "R100005",
+            "rating": 2,
+            "title": "Flimsy and wobbly",
+            "body": "The stand is not sturdy at all. My monitor wobbles every time I type. Would not recommend."
+          }
+        ]
+      }
+    },
+    {
+      "type": "conversion_drop",
+      "severity": "medium",
+      "sku": "SKU-F",
+      "target": "Desk Lamp LED",
+      "description": "Desk Lamp LED (SKU-F) 转化率 2.22%，较 7 日均值 3.09% 下降 28.2%",
+      "recommended_action": "建议检查：1) Buy Box 是否丢失；2) 价格是否被竞品 undercut；3) 是否有差评影响；4) Listing 内容是否被篡改",
+      "raw_data": {
+        "sku": "SKU-F",
+        "conversion_rate": 2.22,
+        "cr_7d_avg": 3.09,
+        "cr_change_pct": -28.2,
+        "buy_box_price": 22.99,
+        "sessions": 180
+      }
+    }
+  ],
+  "summary": {
+    "title": "2026-07-06 运营晨报",
+    "overview": "今日共发现 8 个问题\n（高优先级 3，中优先级 5，低优先级 0）。\n\n需立即处理：\n  1. Campaign-B 关键词 \"desk accessories\" 昨日花费 $37.50，点击 47 次，但 0 订单\n     → 建议检查搜索词报告，添加否定关键词或降低 \"desk accessories\" 的竞价，避免持续无效花费\n  2. Wireless Phone Charger Stand (SKU-C) 收到 2 条差评：Product arrived damaged(2星); Stopped working after 2 days(1星)\n     → 评论提到包装/破损问题，建议检查 FBA 入仓批次和包装材料，联系亚马逊调查物流损坏\n  3. Monitor Stand Riser (SKU-D) 转化率 2.00%，较 7 日均值 3.08% 下降 35.1%\n     → 建议检查：1) Buy Box 是否丢失；2) 价格是否被竞品 undercut；3) 是否有差评影响；4) Listing 内容是否被篡改\n\n建议关注：\n  1. Desktop Organizer Pro (SKU-A) 库存仅剩 120 件，日均销量 15.0，可售天数 8 天\n     → 库存仅够 8 天，建议立即补货\n  2. Monitor Stand Riser (SKU-D) 库存仅剩 96 件，日均销量 8.0，可售天数 12 天\n     → 库存仅够 12 天，建议立即补货\n  3. Campaign-C 关键词 \"wireless organizer\" 昨日花费 $28.00，点击 42 次，但 0 订单\n     → 建议检查搜索词报告，添加否定关键词或降低 \"wireless organizer\" 的竞价，避免持续无效花费\n  4. Monitor Stand Riser (SKU-D) 收到 1 条差评：Flimsy and wobbly(2星)\n     → 评论提到产品稳固性问题，建议优化产品设计或材料，考虑迭代升级\n  5. Desk Lamp LED (SKU-F) 转化率 2.22%，较 7 日均值 3.09% 下降 28.2%\n     → 建议检查：1) Buy Box 是否丢失；2) 价格是否被竞品 undercut；3) 是否有差评影响；4) Listing 内容是否被篡改",
+    "ai_powered": false,
+    "raw_text": ""
+  },
+  "issue_count": 8,
+  "high_count": 3,
+  "medium_count": 5,
+  "low_count": 0
+}
