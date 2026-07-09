@@ -336,9 +336,13 @@ export default function XHSPage() {
                 </button>
               )}
             </div>
-            {showSearchResults && searchResults.length > 0 && (
+            {showSearchResults && (
               <div className="mt-3 text-xs text-faint">
-                找到 <span className="font-semibold text-fg-strong">{searchResults.length}</span> 条相关结果
+                {searchResults.length > 0 ? (
+                  <>找到 <span className="font-semibold text-fg-strong">{searchResults.length}</span> 条相关结果</>
+                ) : (
+                  <>未找到相关结果，本地索引中无匹配数据。更新 Cookie 后可搜索小红书全站内容</>
+                )}
                 {trendData && trendData.has_data && trendData.snapshot_count && (
                   <span className="ml-3 text-fainter">
                     · 历史快照 {trendData.snapshot_count} 次
@@ -665,10 +669,10 @@ export default function XHSPage() {
               <div className="flex items-center gap-1.5">
                 <Flame className="w-3.5 h-3.5 text-muted" />
                 <h4 className="text-[11px] font-semibold text-fg">
-                  {showSearchResults && searchResults.length > 0 ? "搜索结果作品" : "全部作品"}
+                  {showSearchResults ? "搜索结果作品" : "全部作品"}
                 </h4>
                 <span className="text-[10px] text-fainter font-mono">
-                  · {showSearchResults && searchResults.length > 0 ? searchResults.length : notes.length} 篇
+                  · {showSearchResults ? searchResults.length : notes.length} 篇
                 </span>
               </div>
             </div>
@@ -689,9 +693,16 @@ export default function XHSPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(showSearchResults && searchResults.length > 0 ? searchResults : notes).map((item: any, idx: number) => {
-                    const isSearch = showSearchResults && searchResults.length > 0;
-                    const title = isSearch ? (item.title || "无标题") : (item.title || "无标题");
+                  {showSearchResults && searchResults.length === 0 ? (
+                    <tr>
+                      <td colSpan={10} className="text-center py-8 text-fainter text-sm">
+                        未找到相关帖子，请尝试其他关键词
+                      </td>
+                    </tr>
+                  ) : (
+                    (showSearchResults ? searchResults : notes).map((item: any, idx: number) => {
+                      const isSearch = showSearchResults;
+                    const title = item.title || "无标题";
                     const author = isSearch ? item.author : item.author_nickname;
                     const noteUrl = isSearch ? item.url : item.note_url;
                     const noteId = isSearch ? item.id : item.note_id;
@@ -701,8 +712,8 @@ export default function XHSPage() {
                     const shares = isSearch ? parseNum(item.shares || "0") : item.share_count;
                     const collects = isSearch ? parseNum(item.favorites || "0") : item.collect_count;
                     const engagement = likes + comments + shares + collects;
-                    const pubTime = isSearch ? item.publish_time : item.publish_time;
-                    const tags = isSearch ? item.tags : item.tags;
+                    const pubTime = item.publish_time;
+                    const tags = item.tags;
                     const TypeIcon = TYPE_CONFIG[noteType]?.icon || Image;
                     const isHot = idx < 3;
                     return (
@@ -745,7 +756,8 @@ export default function XHSPage() {
                         </td>
                       </tr>
                     );
-                  })}
+                  })
+                  )}
                 </tbody>
               </table>
             </div>

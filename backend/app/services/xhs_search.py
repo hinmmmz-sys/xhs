@@ -154,9 +154,9 @@ def _calculate_relevance(note: dict, keyword: str) -> float:
     - 标题完全匹配: +100
     - 标题包含关键词: +50
     - 标签完全匹配: +30
-    - 标签包含: +15
-    - 描述包含: +10
-    - 作者名包含: +10
+    - 标签包含关键词: +15
+    - 描述包含关键词: +10
+    - 作者名包含关键词: +10
     - 点赞加权: likes/1000 (max +20)
     """
     score = 0.0
@@ -166,43 +166,36 @@ def _calculate_relevance(note: dict, keyword: str) -> float:
     author = note.get("author", "").lower()
     tags = note.get("tags", "").lower()
 
-    # 标题匹配
+    # 标题匹配（精确 > 包含 > 不匹配）
     if kw == title:
         score += 100
     elif kw in title:
         score += 50
-    else:
-        # 字符级模糊匹配
-        chars = set(kw)
-        title_chars = set(title)
-        if chars and len(chars & title_chars) / len(chars) > 0.6:
-            score += 20
 
-    # 标签匹配
-    if tags:
+    # 标签匹配（只匹配完整关键词，不做单字匹配）
+    if tags and score == 0:  # 标题已匹配则不再查标签
         tag_list = [t.strip() for t in tags.replace("#", " ").split() if t.strip()]
         for tag in tag_list:
             tag_lower = tag.lower()
             if kw == tag_lower:
                 score += 30
+                break
             elif kw in tag_lower or tag_lower in kw:
                 score += 15
-            else:
-                for ch in kw:
-                    if ch in tag_lower:
-                        score += 1
+                break
 
     # 描述匹配
-    if kw in desc:
+    if score == 0 and kw in desc:
         score += 10
 
     # 作者匹配
-    if kw in author:
+    if score == 0 and kw in author:
         score += 10
 
-    # 点赞加权
-    likes = _parse_number(note.get("likes", "0"))
-    score += min(likes / 1000, 20)
+    # 只对已有匹配的结果做点赞加权（避免无关热门内容排序靠前）
+    if score > 0:
+        likes = _parse_number(note.get("likes", "0"))
+        score += min(likes / 1000, 20)
 
     return score
 
@@ -449,14 +442,7 @@ async def search_xhs_notes(keyword: str, max_results: int = 9999) -> list[dict]:
     scored.sort(key=lambda x: x[0], reverse=True)
     results = [note for _, note in scored[:max_results]]
 
-    # 无匹配 → 返回热门内容
-    if not results:
-        results = sorted(
-            notes,
-            key=lambda n: _parse_number(n.get("likes", "0")),
-            reverse=True,
-        )[:max_results]
-
+    # 无匹配 → 返回空列表（不再返回无关的热门内容）
     return results
 
 
