@@ -1,6 +1,21 @@
 import type { Metadata } from "next";
+import { Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+
+// 展示字体（标题、数值）
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+// 等宽字体（标签、数字、代码感）
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
 
 export const metadata: Metadata = {
   title: "SellerPulse Agent | 跨境电商运营晨报",
@@ -13,7 +28,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="h-full antialiased">
+    <html
+      lang="zh-CN"
+      className={`${spaceGrotesk.variable} ${plexMono.variable} h-full antialiased`}
+    >
       <body className="min-h-full bg-app text-fg">
         <Sidebar />
         <main className="ml-60 min-h-screen">{children}</main>

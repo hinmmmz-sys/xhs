@@ -1,0 +1,72 @@
+{
+  "护肤": [
+    {
+      "timestamp": "2026-07-08T16:03:07.950961",
+      "date": "2026-07-08",
+      "time": "16:03",
+      "total_notes": 234,
+      "total_likes": 288594.0,
+      "total_comments": 15649.0,
+      "total_shares": 20824.0,
+      "total_collects": 190295.0,
+      "total_engagement": 515362.0,
+      "avg_engagement": 2202,
+      "video_count": 18,
+      "image_count": 216,
+      "gallery_count": 0,
+      "unique_authors": 203
+    },
+    {
+      "timestamp": "2026-07-08T16:11:47.686851",
+      "date": "2026-07-08",
+      "time": "16:11",
+      "total_notes": 312,
+      "total_likes": 462146.0,
+      "total_comments": 18227.0,
+      "total_shares": 0.0,
+      "total_collects": 332952.0,
+      "total_engagement": 813325.0,
+      "avg_engagement": 2607,
+      "video_count": 0,
+      "image_count": 0,
+      "gallery_count": 0,
+      "unique_authors": 253
+    }
+  ],
+  "穿搭": [
+    {
+      "timestamp": "2026-07-08T16:09:59.393354",
+      "date": "2026-07-08",
+      "time": "16:09",
+      "total_notes": 66,
+      "total_likes": 68778.0,
+      "total_comments": 2344.0,
+      "total_shares": 0.0,
+      "total_collects": 17996.0,
+      "total_engagement": 89118.0,
+      "avg_engagement": 1350,
+      "video_count": 0,
+      "image_count": 0,
+      "gallery_count": 0,
+      "unique_authors": 45
+    }
+  ],
+  "足球": [
+    {
+      "timestamp": "2026-07-08T17:03:41.387027",
+      "date": "2026-07-08",
+      "time": "17:03",
+      "total_notes": 241,
+      "total_likes": 572090.0,
+      "total_comments": 11748.0,
+      "total_shares": 23503.0,
+      "total_collects": 37926.0,
+      "total_engagement": 645267.0,
+      "avg_engagement": 2677,
+      "video_count": 17,
+      "image_count": 224,
+      "gallery_count": 0,
+      "unique_authors": 224
+    }
+  ]
+}

@@ -19,8 +19,8 @@ import {
   CheckCircle,
   Lightbulb,
 } from "lucide-react";
-import { getLatestReport, generateReport, getBusinessOverview, getXHSStats } from "@/lib/api";
-import type { ReportData, BusinessOverview as BusinessOverviewData, XHSStats } from "@/lib/types";
+import { getLatestReport, generateReport, getBusinessOverview } from "@/lib/api";
+import type { ReportData, BusinessOverview as BusinessOverviewData } from "@/lib/types";
 import DashboardToolbar from "@/components/DashboardToolbar";
 import MetricCard from "@/components/MetricCard";
 import AnomalyAlertBar from "@/components/AnomalyAlertBar";
@@ -29,14 +29,11 @@ import ChannelBarChart from "@/components/ChannelBarChart";
 import ChannelDetailCard from "@/components/ChannelDetailCard";
 import TopSKUTable from "@/components/TopSKUTable";
 import AdPerformanceTable from "@/components/AdPerformanceTable";
-import XHSOverviewCard from "@/components/XHSOverviewCard";
-import XHSTopNotesTable from "@/components/XHSTopNotesTable";
 import IssueList from "@/components/IssueList";
 
 export default function DashboardPage() {
   const [report, setReport] = useState<ReportData | null>(null);
   const [overview, setOverview] = useState<BusinessOverviewData | null>(null);
-  const [xhsStats, setXhsStats] = useState<XHSStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
@@ -59,20 +56,10 @@ export default function DashboardPage() {
     setReport(data);
   }, []);
 
-  const loadXHS = useCallback(async () => {
-    try {
-      const data = await getXHSStats();
-      setXhsStats(data);
-    } catch (err) {
-      console.error("获取小红书数据失败:", err);
-    }
-  }, []);
-
   useEffect(() => {
     loadOverview(dateRange);
     loadLatest();
-    loadXHS();
-  }, [dateRange, loadOverview, loadLatest, loadXHS]);
+  }, [dateRange, loadOverview, loadLatest]);
 
   const handleGenerate = async () => {
     setGenerating(true);
@@ -193,22 +180,6 @@ export default function DashboardPage() {
             <TopSKUTable skus={overview.top_skus} />
             <AdPerformanceTable rows={overview.ad_performance} />
           </div>
-
-          {/* ===== 小红书种草数据 ===== */}
-          {xhsStats && (
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-[10px] font-semibold text-muted uppercase tracking-[0.16em] font-mono">
-                  小红书种草数据
-                </span>
-                <span className="text-[10px] text-fainter font-mono">· 来自 XHS-Downloader</span>
-              </div>
-              <div className="space-y-3">
-                <XHSOverviewCard stats={xhsStats} />
-                <XHSTopNotesTable notes={xhsStats.trending_notes} />
-              </div>
-            </div>
-          )}
 
           {/* ===== 今日结论与动作 ===== */}
           <div>

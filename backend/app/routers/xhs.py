@@ -10,6 +10,15 @@ from app.services.xhs_search import (
     search_by_user_profile,
     get_search_stats,
     invalidate_cache,
+    hot_search_via_gateway,
+    hot_search_via_browser,
+    search_suggest_via_gateway,
+    save_keyword_snapshot,
+    get_keyword_trend,
+    get_all_keyword_snapshots,
+    get_user_posted,
+    get_user_info,
+    get_note_feed,
 )
 
 router = APIRouter()
@@ -66,7 +75,7 @@ async def xhs_search_engine_stats():
 
 class SearchRequest(BaseModel):
     keyword: str
-    max_results: int = 20
+    max_results: int = 9999
 
 
 class NoteDetailRequest(BaseModel):
@@ -79,13 +88,28 @@ class UserProfileRequest(BaseModel):
 
 @router.post("/search")
 async def xhs_search(request: SearchRequest):
-    """搜索小红书帖子（关键词 or 链接，自动识别）"""
+    """搜索小红书帖子（关键词 or 链接，自动识别），自动保存快照用于趋势分析"""
     results = await search_xhs_notes(request.keyword, request.max_results)
+    # 自动保存快照
+    snapshot = save_keyword_snapshot(request.keyword, results) if results else None
     return {
         "keyword": request.keyword,
         "total": len(results),
         "notes": results,
+        "snapshot": snapshot,
     }
+
+
+@router.get("/keyword-trend")
+async def xhs_keyword_trend(keyword: str = Query(..., description="关键词")):
+    """获取关键词趋势数据（对比历史快照）"""
+    return get_keyword_trend(keyword)
+
+
+@router.get("/keyword-snapshots")
+async def xhs_keyword_snapshots():
+    """获取所有关键词的快照列表"""
+    return get_all_keyword_snapshots()
 
 
 @router.post("/note-detail")
@@ -106,3 +130,60 @@ async def xhs_user_profile(request: UserProfileRequest):
         "total": len(results),
         "notes": results,
     }
+
+
+@router.get("/hot-search")
+async def xhs_hot_search():
+    """获取小红书热门搜索词（实时）"""
+    # 优先浏览器搜索服务
+    data = await hot_search_via_browser()
+    if data and data.get("success"):
+        return data
+    # 回退 Gateway
+    data = await hot_search_via_gateway()
+    if data:
+        return data
+    return {"success": False, "error": "搜索服务不可用", "hot_list": []}
+
+
+@router.get("/search-suggest")
+async def xhs_search_suggest(keyword: str = Query(..., description="搜索关键词")):
+    """获取搜索建议（实时）"""
+    data = await search_suggest_via_gateway(keyword)
+    if data:
+        return data
+    return {"success": False, "error": "Gateway 不可用", "suggestions": []}
+
+
+@router.get("/user-posted")
+async def xhs_user_posted(
+    user_id: str = Query(..., description="用户 ID"),
+    cursor: str = Query("", description="分页游标"),
+    num: int = Query(30, description="数量"),
+):
+    """获取用户发布的笔记列表（实时）"""
+    data = await get_user_posted(user_id, cursor, num)
+    if data:
+        return data
+    return {"success": False, "error": "Gateway 不可用", "notes": []}
+
+
+@router.get("/user-info")
+async def xhs_user_info(user_id: str = Query(..., description="用户 ID")):
+    """获取用户基本信息（实时）"""
+    data = await get_user_info(user_id)
+    if data:
+        return data
+    return {"success": False, "error": "Gateway 不可用"}
+
+
+@router.get("/note-feed")
+async def xhs_note_feed(
+    note_id: str = Query(..., description="笔记 ID"),
+    xsec_token: str = Query("", description="xsec token"),
+):
+    """获取单篇笔记详情（实时 feed API）"""
+    data = await get_note_feed(note_id, xsec_token)
+    if data:
+        return data
+    return {"success": False, "error": "Gateway 不可用", "note": None}
