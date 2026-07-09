@@ -76,6 +76,7 @@ async def xhs_search_engine_stats():
 class SearchRequest(BaseModel):
     keyword: str
     max_results: int = 9999
+    realtime_only: bool = False
 
 
 class NoteDetailRequest(BaseModel):
@@ -89,12 +90,13 @@ class UserProfileRequest(BaseModel):
 @router.post("/search")
 async def xhs_search(request: SearchRequest):
     """搜索小红书帖子（关键词 or 链接，自动识别），自动保存快照用于趋势分析"""
-    results = await search_xhs_notes(request.keyword, request.max_results)
+    results = await search_xhs_notes(request.keyword, request.max_results, request.realtime_only)
     # 自动保存快照
     snapshot = save_keyword_snapshot(request.keyword, results) if results else None
     return {
         "keyword": request.keyword,
         "total": len(results),
+        "realtime_only": request.realtime_only,
         "notes": results,
         "snapshot": snapshot,
     }

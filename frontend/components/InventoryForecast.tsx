@@ -93,7 +93,7 @@ export default function InventoryForecast({ overview, topSKUs, trend }: Inventor
           </div>
           <span className="text-2xl font-bold text-warn tabular font-display">{lowStock.length}</span>
           <div className="text-[10px] text-fainter mt-1 font-mono">
-            需关注 · 可售 < 14天
+            需关注 · 可售 &lt; 14天
           </div>
         </div>
 

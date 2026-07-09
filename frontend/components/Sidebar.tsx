@@ -37,11 +37,56 @@ const NAV_GROUPS = [
   },
 ];
 
+const NAV_ITEMS = NAV_GROUPS.flatMap((group) => group.items);
+
 export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-60 bg-sidebar flex flex-col z-50 border-r border-line-soft">
+    <>
+      <header className="fixed left-0 right-0 top-0 z-50 border-b border-line-soft bg-sidebar lg:hidden">
+        <div className="flex h-16 items-center justify-between px-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-[30px] h-[30px] bg-[#111318] border border-[#33363d] rounded-md flex items-center justify-center flex-shrink-0">
+              <div className="w-[11px] h-[11px] bg-ink rounded-[2px]" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-[13px] font-bold text-ink tracking-tight font-display">
+                SellerPulse
+              </h1>
+              <p className="text-[9px] text-fainter leading-tight font-mono uppercase tracking-[0.14em]">
+                Ops Agent
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 rounded-md border border-line-soft bg-inset px-2 py-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-up flex-shrink-0" />
+            <span className="text-[10px] font-medium text-fg">运行中</span>
+          </div>
+        </div>
+        <nav className="flex gap-1 overflow-x-auto px-3 pb-3">
+          {NAV_ITEMS.map((item) => {
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex min-w-fit items-center gap-1.5 rounded-md border px-2.5 py-2 text-[11px] font-medium ${
+                  isActive
+                    ? "border-line bg-panel-2 text-ink"
+                    : "border-transparent text-muted hover:bg-panel/60 hover:text-fg-strong"
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5 flex-shrink-0" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </header>
+
+      <aside className="fixed left-0 top-0 z-50 hidden h-screen w-60 flex-col border-r border-line-soft bg-sidebar lg:flex">
       {/* Logo */}
       <div className="px-5 py-[18px] border-b border-line-soft">
         <div className="flex items-center gap-2.5">
@@ -114,6 +159,7 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

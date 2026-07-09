@@ -28,7 +28,7 @@ export default function XHSTopNotesTable({ notes }: XHSTopNotesTableProps) {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full min-w-[760px] text-sm">
           <thead>
             <tr className="text-[9px] font-mono text-fainter tracking-[0.05em] border-b border-line-soft">
               <th className="text-left font-normal py-2.5 px-4">#</th>

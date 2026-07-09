@@ -400,12 +400,13 @@ def _normalize_gateway_note(note: dict) -> dict:
 
 # ---- 主搜索函数 ----
 
-async def search_xhs_notes(keyword: str, max_results: int = 9999) -> list[dict]:
+async def search_xhs_notes(keyword: str, max_results: int = 9999, realtime_only: bool = False) -> list[dict]:
     """
     统一搜索入口
 
     - 如果输入是小红书链接 → 实时抓取详情
-    - 如果输入是关键词 → 优先走 Gateway 多页搜索，其次浏览器，最后本地索引
+    - 如果输入是关键词 → 优先走 Gateway 多页搜索，其次浏览器
+    - realtime_only=True 时禁用本地索引兜底
     """
     keyword = keyword.strip()
     if not keyword:
@@ -416,6 +417,8 @@ async def search_xhs_notes(keyword: str, max_results: int = 9999) -> list[dict]:
         result = await fetch_note_by_url(keyword)
         if result:
             return [result]
+        if realtime_only:
+            return []
         # URL 抓取失败，尝试从本地找
         notes = _search_index or _build_search_index()
         url_id = keyword.split("/explore/")[-1].split("/item/")[-1].split("?")[0]
@@ -435,6 +438,9 @@ async def search_xhs_notes(keyword: str, max_results: int = 9999) -> list[dict]:
     if browser_result and browser_result.get("notes"):
         notes = [_normalize_browser_note(n) for n in browser_result["notes"]]
         return notes[:max_results]
+
+    if realtime_only:
+        return []
 
     # 均不可用 → 回退本地索引
     notes = _search_index or _build_search_index()
@@ -514,6 +520,7 @@ def get_search_stats() -> dict:
         "xhs_api_running": _check_api_health(),
         "gateway_running": _check_gateway_health(),
         "browser_search_running": _check_browser_health(),
+        "browser_logged_in": _check_browser_login(),
     }
 
 
@@ -599,6 +606,18 @@ def _check_browser_health() -> bool:
         resp = urllib.request.urlopen(req, timeout=5)
         data = json.loads(resp.read())
         return data.get("status") == "ok" and data.get("browser_connected", False)
+    except Exception:
+        return False
+
+
+def _check_browser_login() -> bool:
+    """检查浏览器搜索服务连接的小红书页面是否已登录"""
+    import urllib.request
+    try:
+        req = urllib.request.Request(f"{XHS_BROWSER_BASE}/login-status", method="GET")
+        resp = urllib.request.urlopen(req, timeout=5)
+        data = json.loads(resp.read())
+        return data.get("loggedIn", False)
     except Exception:
         return False
 

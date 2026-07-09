@@ -127,9 +127,10 @@ export async function syncXHS(): Promise<{ message: string; total_notes: number 
   return res.data;
 }
 
-export async function searchXHS(keyword: string, maxResults: number = 9999): Promise<{
+export async function searchXHS(keyword: string, maxResults: number = 9999, realtimeOnly: boolean = false): Promise<{
   keyword: string;
   total: number;
+  realtime_only: boolean;
   notes: Array<{
     id: string;
     title: string;
@@ -150,6 +151,7 @@ export async function searchXHS(keyword: string, maxResults: number = 9999): Pro
   const res = await client.post("/api/xhs/search", {
     keyword,
     max_results: maxResults,
+    realtime_only: realtimeOnly,
   });
   return res.data;
 }
@@ -160,6 +162,7 @@ export async function getXHSSearchEngine(): Promise<{
   xhs_api_running: boolean;
   gateway_running: boolean;
   browser_search_running: boolean;
+  browser_logged_in: boolean;
 }> {
   const res = await client.get("/api/xhs/search-engine");
   return res.data;

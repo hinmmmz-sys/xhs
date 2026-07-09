@@ -39,7 +39,7 @@ function StatPill({
 export default function XHSOverviewCard({ stats }: XHSOverviewCardProps) {
   return (
     <div className="bg-panel rounded-md border border-line p-5">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <Flame className="w-4 h-4 text-muted" />
           <h3 className="text-sm font-semibold text-fg">小红书种草概览</h3>
@@ -51,7 +51,7 @@ export default function XHSOverviewCard({ stats }: XHSOverviewCardProps) {
       </div>
 
       {/* 统计指标行 */}
-      <div className="grid grid-cols-5 gap-3 mb-4">
+      <div className="grid grid-cols-1 gap-3 mb-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatPill icon={Heart} label="点赞" value={stats.total_likes} />
         <StatPill icon={MessageCircle} label="评论" value={stats.total_comments} />
         <StatPill icon={Share2} label="分享" value={stats.total_shares} />
@@ -60,8 +60,8 @@ export default function XHSOverviewCard({ stats }: XHSOverviewCardProps) {
       </div>
 
       {/* 类型分布 + Top作者 */}
-      <div className="flex items-center justify-between pt-3 border-t border-line-soft">
-        <div className="flex items-center gap-3 text-[11px] font-mono">
+      <div className="flex flex-col gap-3 pt-3 border-t border-line-soft xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex flex-wrap items-center gap-3 text-[11px] font-mono">
           <span className="text-faint">
             共 <span className="font-semibold text-fg-strong">{stats.total_notes}</span> 篇作品
           </span>
@@ -77,7 +77,7 @@ export default function XHSOverviewCard({ stats }: XHSOverviewCardProps) {
           </span>
         </div>
         {stats.top_authors.length > 0 && (
-          <div className="flex items-center gap-1.5 text-[11px]">
+          <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
             <span className="text-fainter font-mono">Top 作者:</span>
             {stats.top_authors.slice(0, 3).map((author, i) => (
               <span
