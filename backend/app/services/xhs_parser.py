@@ -1,7 +1,8 @@
 """小红书数据解析服务 — 从 XHS-Downloader 的 ExploreData.db 读取采集数据"""
 
-import sqlite3
 import random
+import json
+import sqlite3
 from pathlib import Path
 from typing import List, Optional
 
@@ -78,6 +79,45 @@ def _generate_mock_notes(count: int = 20) -> List[XHSNoteRecord]:
     return notes
 
 
+def _read_json_notes() -> List[XHSNoteRecord]:
+    """Load bundled XHS search data when XHS-Downloader data is unavailable."""
+    json_path = Path(__file__).parent.parent / "data" / "xhs_notes_db.json"
+    if not json_path.exists():
+        return []
+
+    try:
+        data = json.loads(json_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        print(f"[WARN] Failed to read fallback XHS JSON database: {exc}")
+        return []
+
+    notes = []
+    for item in data.get("notes", []):
+        note_id = str(item.get("id") or "")
+        if not note_id:
+            continue
+
+        keywords = item.get("search_keywords") or []
+        notes.append(XHSNoteRecord(
+            note_id=note_id,
+            note_type=str(item.get("type") or "图文"),
+            title=str(item.get("title") or ""),
+            desc=str(item.get("description") or ""),
+            tags=" ".join(str(keyword) for keyword in keywords),
+            publish_time=str(item.get("publish_time") or ""),
+            collect_time="",
+            liked_count=_safe_int(item.get("likes")),
+            comment_count=_safe_int(item.get("comments")),
+            share_count=_safe_int(item.get("shares")),
+            collect_count=_safe_int(item.get("favorites")),
+            author_nickname=str(item.get("author") or ""),
+            author_id=str(item.get("author_id") or ""),
+            note_url=str(item.get("url") or ""),
+        ))
+
+    return notes
+
+
 def read_xhs_notes() -> List[XHSNoteRecord]:
     """
     从 XHS-Downloader 的 ExploreData.db 读取采集的作品数据。
@@ -120,8 +160,8 @@ def read_xhs_notes() -> List[XHSNoteRecord]:
         except Exception as e:
             print(f"[WARN] 读取 XHS 数据库失败: {e}")
 
-    # 无真实数据时返回空列表
-    return []
+    # Fall back to bundled JSON data when the local XHS-Downloader database is unavailable.
+    return _read_json_notes()
 
 
 def _safe_int(value) -> int:
@@ -160,10 +200,11 @@ def compute_xhs_stats(notes: List[XHSNoteRecord]) -> XHSStats:
     # 按作者聚合
     author_map: dict[str, dict] = {}
     for n in notes:
-        if n.author_id not in author_map:
-            author_map[n.author_id] = {"name": n.author_nickname, "notes": 0, "engagement": 0}
-        author_map[n.author_id]["notes"] += 1
-        author_map[n.author_id]["engagement"] += n.engagement
+        author_key = n.author_id or n.author_nickname or n.note_id
+        if author_key not in author_map:
+            author_map[author_key] = {"name": n.author_nickname, "notes": 0, "engagement": 0}
+        author_map[author_key]["notes"] += 1
+        author_map[author_key]["engagement"] += n.engagement
     top_authors = sorted(
         [{"name": v["name"], "notes": v["notes"], "engagement": v["engagement"]} for v in author_map.values()],
         key=lambda x: x["engagement"],

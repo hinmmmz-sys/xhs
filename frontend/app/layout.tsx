@@ -34,7 +34,7 @@ export default function RootLayout({
     >
       <body className="min-h-full bg-app text-fg">
         <Sidebar />
-        <main className="ml-60 min-h-screen">{children}</main>
+        <main className="min-h-screen pt-28 lg:ml-60 lg:pt-0">{children}</main>
       </body>
     </html>
   );

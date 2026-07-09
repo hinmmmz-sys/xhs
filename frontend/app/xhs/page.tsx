@@ -25,10 +25,12 @@ import {
   Users,
   BarChart3,
 } from "lucide-react";
-import { getXHSStats, getXHSNotes, syncXHS, searchXHS, getKeywordTrend } from "@/lib/api";
+import { getXHSStats, getXHSNotes, syncXHS, searchXHS, getKeywordTrend, getXHSSearchEngine } from "@/lib/api";
 import type { XHSStats, XHSNoteRecord } from "@/lib/types";
 import type { KeywordTrendData } from "@/lib/api";
 import XHSOverviewCard from "@/components/XHSOverviewCard";
+
+type SearchEngineStats = Awaited<ReturnType<typeof getXHSSearchEngine>>;
 
 function formatNum(value: number): string {
   if (value >= 10000) return `${(value / 10000).toFixed(1)}万`;
@@ -61,6 +63,8 @@ export default function XHSPage() {
   // 搜索相关状态
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searching, setSearching] = useState(false);
+  const [realtimeOnly, setRealtimeOnly] = useState(false);
+  const [searchNotice, setSearchNotice] = useState<string | null>(null);
   const [searchResults, setSearchResults] = useState<
     Array<{
       id: string;
@@ -75,6 +79,8 @@ export default function XHSPage() {
       publish_time: string;
       url: string;
       tags: string;
+      author_id?: string;
+      source?: string;
     }>
   >([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -85,16 +91,19 @@ export default function XHSPage() {
 
   // 关键词趋势数据
   const [trendData, setTrendData] = useState<KeywordTrendData | null>(null);
+  const [searchEngineStats, setSearchEngineStats] = useState<SearchEngineStats | null>(null);
 
   const loadData = useCallback(async (sort: string) => {
     setLoading(true);
     try {
-      const [statsData, notesData] = await Promise.all([
+      const [statsData, notesData, searchEngineData] = await Promise.all([
         getXHSStats(),
         getXHSNotes(100, sort),
+        getXHSSearchEngine().catch(() => null),
       ]);
       setStats(statsData);
       setNotes(notesData.notes);
+      setSearchEngineStats(searchEngineData);
     } catch (err) {
       console.error("获取小红书数据失败:", err);
     }
@@ -105,15 +114,33 @@ export default function XHSPage() {
     loadData(sortBy);
   }, [sortBy, loadData]);
 
+  const realtimeReady = Boolean(
+    searchEngineStats?.gateway_running ||
+      (searchEngineStats?.browser_search_running && searchEngineStats?.browser_logged_in)
+  );
+  const realtimeBlocked = Boolean(realtimeOnly && searchEngineStats && !realtimeReady);
+  const canSearch = Boolean(searchKeyword.trim()) && !searching && !realtimeBlocked;
+
   const handleSearch = async () => {
     if (!searchKeyword.trim()) return;
+    if (realtimeBlocked) {
+      setShowSearchResults(true);
+      setSearchResults([]);
+      setTrendData(null);
+      setSearchNotice("严格实时模式需要实时服务在线：请先启动 Gateway，或启动 Browser Search 并登录小红书。");
+      return;
+    }
 
     setSearching(true);
     setShowSearchResults(true);
     setResultsExpanded(false); // 搜索后默认折叠
+    setSearchNotice(null);
     try {
-      const result = await searchXHS(searchKeyword, 9999);
+      const result = await searchXHS(searchKeyword, 9999, realtimeOnly);
       setSearchResults(result.notes);
+      if (realtimeOnly && result.notes.length === 0) {
+        setSearchNotice("严格实时模式未返回结果：请确认 Gateway 在线，或 Browser Search 已启动且小红书已登录。");
+      }
 
       // 获取趋势数据
       try {
@@ -126,6 +153,7 @@ export default function XHSPage() {
       console.error("搜索失败:", err);
       setSearchResults([]);
       setTrendData(null);
+      setSearchNotice("搜索失败：请检查后端服务和实时搜索服务状态。");
     }
     setSearching(false);
   };
@@ -153,7 +181,7 @@ export default function XHSPage() {
   const totalNotes = typeDistribution.reduce((sum, t) => sum + t.value, 0);
 
   // 从搜索结果计算分析数据（搜索与分析联动）
-  const searchStats = showSearchResults && searchResults.length > 0
+  const searchStats = showSearchResults
     ? (() => {
         let totalLikes = 0, totalComments = 0, totalShares = 0, totalCollects = 0;
         let videoCount = 0, imageCount = 0, galleryCount = 0;
@@ -200,9 +228,9 @@ export default function XHSPage() {
       })()
     : null;
 
-  // 展示用的统计：搜索时用搜索结果计算的，否则用本地数据
-  const displayStats = searchStats || stats;
-  const displayTypeDistribution = searchStats
+  // 展示用的统计：搜索态只看本次搜索，避免严格实时模式视觉上回落到本地数据。
+  const displayStats = showSearchResults ? searchStats : stats;
+  const displayTypeDistribution = showSearchResults && searchStats
     ? [
         { name: "视频", value: searchStats.video_count, color: TYPE_CONFIG["视频"].color },
         { name: "图文", value: searchStats.image_count, color: TYPE_CONFIG["图文"].color },
@@ -214,6 +242,7 @@ export default function XHSPage() {
   // 折叠时显示的结果
   const visibleResults = resultsExpanded ? searchResults : searchResults.slice(0, COLLAPSED_COUNT);
   const hasMoreResults = searchResults.length > COLLAPSED_COUNT;
+  const tableItems = showSearchResults ? searchResults : notes;
 
   // 趋势卡片
   const trendConfig = (() => {
@@ -231,10 +260,10 @@ export default function XHSPage() {
   })();
 
   return (
-    <div className="px-6 py-5">
+    <div className="px-4 py-4 sm:px-6 sm:py-5">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-faint font-medium">XHS Insights</span>
           <ChevronRight className="w-3 h-3 text-fainter" />
           <span className="text-xs text-fg font-medium">小红书种草分析</span>
@@ -244,11 +273,11 @@ export default function XHSPage() {
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="text-[11px] border border-line rounded-md px-2.5 py-1.5 bg-panel text-fg focus:outline-none focus:border-[#33363d] cursor-pointer"
+            className="flex-1 text-[11px] border border-line rounded-md px-2.5 py-1.5 bg-panel text-fg focus:outline-none focus:border-[#33363d] cursor-pointer sm:flex-none"
           >
             <option value="engagement">按互动量</option>
             <option value="liked">按点赞数</option>
@@ -256,8 +285,13 @@ export default function XHSPage() {
           </select>
           <button
             onClick={handleSync}
-            disabled={syncing}
-            className="flex items-center gap-1.5 bg-ink text-app px-3 py-1.5 rounded-md text-[11px] font-semibold hover:bg-white disabled:opacity-50"
+            disabled={syncing || !searchEngineStats?.xhs_api_running}
+            title={
+              searchEngineStats?.xhs_api_running
+                ? undefined
+                : "请先启动 XHS-Downloader API（127.0.0.1:5556）"
+            }
+            className="flex items-center gap-1.5 bg-ink text-app px-3 py-1.5 rounded-md text-[11px] font-semibold hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {syncing ? (
               <RefreshCw className="w-3 h-3 animate-spin" />
@@ -288,7 +322,7 @@ export default function XHSPage() {
         <div className="space-y-4">
           {/* ===== 搜索栏 ===== */}
           <div className="bg-panel rounded-md border border-line p-4">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fainter" />
                 <input
@@ -296,7 +330,7 @@ export default function XHSPage() {
                   value={searchKeyword}
                   onChange={(e) => setSearchKeyword(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && searchKeyword.trim()) {
+                    if (e.key === "Enter" && canSearch) {
                       handleSearch();
                     }
                   }}
@@ -306,8 +340,13 @@ export default function XHSPage() {
               </div>
               <button
                 onClick={handleSearch}
-                disabled={searching || !searchKeyword.trim()}
-                className="flex items-center gap-2 bg-ink text-app px-5 py-2.5 rounded-md text-sm font-semibold hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!canSearch}
+                title={
+                  realtimeBlocked
+                    ? "请先启动 Gateway，或启动 Browser Search 并登录小红书。"
+                    : undefined
+                }
+                className="flex items-center justify-center gap-2 bg-ink text-app px-5 py-2.5 rounded-md text-sm font-semibold hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {searching ? (
                   <>
@@ -329,11 +368,60 @@ export default function XHSPage() {
                     setSearchKeyword("");
                     setTrendData(null);
                     setResultsExpanded(false);
+                    setSearchNotice(null);
                   }}
-                  className="text-fainter hover:text-fg p-2 rounded-md hover:bg-panel-2"
+                  className="self-center text-fainter hover:text-fg p-2 rounded-md hover:bg-panel-2"
                 >
                   <X className="w-4 h-4" />
                 </button>
+              )}
+            </div>
+            <label className="mt-3 flex w-fit items-center gap-2 text-[11px] font-medium text-faint">
+              <input
+                type="checkbox"
+                checked={realtimeOnly}
+                onChange={(e) => setRealtimeOnly(e.target.checked)}
+                className="h-3.5 w-3.5 accent-[#e6e7ea]"
+              />
+              只看实时
+            </label>
+            {/* 搜索引擎状态 */}
+            <div className="flex flex-wrap items-center gap-3 mt-2.5 text-[9px] font-mono text-fainter">
+              {searchEngineStats && (
+                <>
+                  <span>
+                    索引 <span className="text-fg font-semibold">{searchEngineStats.total_notes}</span> 篇笔记
+                  </span>
+                  {searchEngineStats.sources.explore_db > 0 && (
+                    <span>采集数据 {searchEngineStats.sources.explore_db}</span>
+                  )}
+                  {searchEngineStats.sources.json_db > 0 && (
+                    <span>搜索库 {searchEngineStats.sources.json_db}</span>
+                  )}
+                  <span className="flex items-center gap-1">
+                    <span className={`w-1.5 h-1.5 rounded-full ${searchEngineStats.xhs_api_running ? "bg-up" : "bg-down"}`} />
+                    XHS API {searchEngineStats.xhs_api_running ? "在线" : "离线"}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className={`w-1.5 h-1.5 rounded-full ${searchEngineStats.gateway_running ? "bg-up" : "bg-down"}`} />
+                    Gateway {searchEngineStats.gateway_running ? "在线" : "离线"}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        searchEngineStats.browser_search_running && searchEngineStats.browser_logged_in
+                          ? "bg-up"
+                          : "bg-down"
+                      }`}
+                    />
+                    Browser{" "}
+                    {searchEngineStats.browser_search_running
+                      ? searchEngineStats.browser_logged_in
+                        ? "已登录"
+                        : "需登录"
+                      : "离线"}
+                  </span>
+                </>
               )}
             </div>
             {showSearchResults && searchResults.length > 0 && (
@@ -346,13 +434,18 @@ export default function XHSPage() {
                 )}
               </div>
             )}
+            {searchNotice && (
+              <div className="mt-3 rounded-md border border-warn/25 bg-warn/5 px-3 py-2 text-xs text-warn">
+                {searchNotice}
+              </div>
+            )}
           </div>
 
           {/* ===== 关键词趋势分析 ===== */}
           {showSearchResults && trendData && trendData.has_data && trendConfig && (
             <div className={`rounded-md border ${trendConfig.borderColor} ${trendConfig.bgColor} p-4`}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-2">
                   <BarChart3 className="w-4 h-4 text-muted" />
                   <h4 className="text-sm font-semibold text-fg">关键词趋势分析</h4>
                   <span className="text-xs text-fainter font-mono">&ldquo;{trendData.keyword}&rdquo;</span>
@@ -368,7 +461,7 @@ export default function XHSPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
                 {/* 总互动量 */}
                 <TrendMetric
                   label="总互动"
@@ -415,9 +508,9 @@ export default function XHSPage() {
               {/* 历史趋势迷你图 */}
               {trendData.history && trendData.history.length > 1 && (
                 <div className="mt-4 pt-3 border-t border-line-soft">
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex flex-col gap-2 mb-2 sm:flex-row sm:items-center sm:justify-between">
                     <span className="text-[10px] text-fainter font-mono">互动量趋势（最近 {trendData.history.length} 次搜索）</span>
-                    <div className="flex items-center gap-2 text-[10px] text-fainter font-mono">
+                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-fainter font-mono">
                       <span>{trendData.history[0].date} {trendData.history[0].time}</span>
                       <ChevronRight className="w-2.5 h-2.5" />
                       <span>{trendData.latest?.date} {trendData.latest?.time}</span>
@@ -433,7 +526,7 @@ export default function XHSPage() {
           {displayStats && <XHSOverviewCard stats={displayStats} />}
 
           {/* ===== 类型分布 + 作者排行 ===== */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
             {/* 内容类型分布 */}
             <div className="bg-panel rounded-md border border-line p-4">
               <h4 className="text-[11px] font-semibold text-fg mb-3">内容类型分布</h4>
@@ -501,13 +594,13 @@ export default function XHSPage() {
             </div>
 
             {/* 作者排行榜 */}
-            <div className="col-span-2 bg-panel rounded-md border border-line p-4">
+            <div className="bg-panel rounded-md border border-line p-4 xl:col-span-2">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-[11px] font-semibold text-fg">作者排行榜</h4>
                 <span className="text-[10px] text-fainter font-mono">按互动量排序</span>
               </div>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full min-w-[620px] text-sm">
                   <thead>
                     <tr className="text-[9px] font-mono text-fainter border-b border-line-soft">
                       <th className="text-left font-normal py-1.5 px-2">#</th>
@@ -610,21 +703,53 @@ export default function XHSPage() {
                         rel="noopener noreferrer"
                         className="block p-4 border border-line rounded-md hover:border-[#33363d] hover:bg-panel-2/40 transition-all group"
                       >
-                        <div className="flex items-start justify-between gap-3">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                           <div className="flex-1 min-w-0">
-                            <h5 className="text-sm font-medium text-fg-strong group-hover:text-info line-clamp-2">
-                              {result.title || "无标题"}
-                            </h5>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h5 className="text-sm font-medium text-fg-strong group-hover:text-info line-clamp-2">
+                                {result.title || "无标题"}
+                              </h5>
+                              {result.source && (() => {
+                                const liveSources = ["realtime", "gateway_live", "browser_live", "user_live"];
+                                const isLive = liveSources.includes(result.source);
+                                const isExplore = result.source === "explore_db";
+                                const label =
+                                  result.source === "gateway_live"
+                                    ? "网关实时"
+                                    : result.source === "browser_live"
+                                      ? "浏览器实时"
+                                      : result.source === "user_live"
+                                        ? "用户实时"
+                                        : result.source === "realtime"
+                                          ? "实时"
+                                          : isExplore
+                                            ? "采集"
+                                            : "搜索库";
+                                return (
+                                  <span
+                                    className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[8px] font-mono ${
+                                      isLive
+                                        ? "bg-info/15 text-info"
+                                        : isExplore
+                                          ? "bg-up/15 text-up"
+                                          : "bg-line-soft text-fainter"
+                                    }`}
+                                  >
+                                    {label}
+                                  </span>
+                                );
+                              })()}
+                            </div>
                             {result.description && (
                               <p className="text-xs text-muted mt-1 line-clamp-2">{result.description}</p>
                             )}
-                            <div className="flex items-center gap-3 mt-2 text-[10px] text-fainter font-mono">
+                            <div className="flex flex-wrap items-center gap-3 mt-2 text-[10px] text-fainter font-mono">
                               <span>{result.author}</span>
                               <span>{result.publish_time}</span>
                               {result.tags && <span className="text-fainter">{result.tags}</span>}
                             </div>
                           </div>
-                          <div className="flex-shrink-0 flex items-center gap-3 text-xs font-mono">
+                          <div className="flex flex-shrink-0 items-center gap-3 self-end text-xs font-mono sm:self-auto">
                             <div className="text-center">
                               <Heart className="w-3.5 h-3.5 text-down mx-auto" />
                               <span className="text-fg font-medium">{result.likes}</span>
@@ -665,15 +790,15 @@ export default function XHSPage() {
               <div className="flex items-center gap-1.5">
                 <Flame className="w-3.5 h-3.5 text-muted" />
                 <h4 className="text-[11px] font-semibold text-fg">
-                  {showSearchResults && searchResults.length > 0 ? "搜索结果作品" : "全部作品"}
+                  {showSearchResults ? "搜索结果作品" : "全部作品"}
                 </h4>
                 <span className="text-[10px] text-fainter font-mono">
-                  · {showSearchResults && searchResults.length > 0 ? searchResults.length : notes.length} 篇
+                  · {tableItems.length} 篇
                 </span>
               </div>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+                <table className="w-full min-w-[760px] text-sm">
                 <thead>
                   <tr className="text-[9px] font-mono text-fainter border-b border-line-soft">
                     <th className="text-left font-normal py-2 px-2">#</th>
@@ -689,8 +814,8 @@ export default function XHSPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(showSearchResults && searchResults.length > 0 ? searchResults : notes).map((item: any, idx: number) => {
-                    const isSearch = showSearchResults && searchResults.length > 0;
+                  {tableItems.length > 0 ? tableItems.map((item: any, idx: number) => {
+                    const isSearch = showSearchResults;
                     const title = isSearch ? (item.title || "无标题") : (item.title || "无标题");
                     const author = isSearch ? item.author : item.author_nickname;
                     const noteUrl = isSearch ? item.url : item.note_url;
@@ -745,7 +870,13 @@ export default function XHSPage() {
                         </td>
                       </tr>
                     );
-                  })}
+                  }) : (
+                    <tr>
+                      <td colSpan={10} className="py-8 text-center text-xs text-fainter">
+                        {realtimeOnly ? "严格实时模式暂无实时结果" : "没有搜索结果"}
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -761,7 +892,7 @@ export default function XHSPage() {
                 </span>
                 <span className="text-[10px] text-warn/80 font-mono">互动量 &lt; 50 的作品</span>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {stats.low_engagement_notes.map((note) => {
                   const engagement =
                     note.liked_count + note.comment_count + note.share_count + note.collect_count;

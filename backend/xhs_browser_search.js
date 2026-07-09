@@ -48,6 +48,37 @@ async function getSearchPage() {
   return page;
 }
 
+async function getLoginStatusFromPage(page) {
+  return page.evaluate(() => {
+    const text = document.body?.innerText || '';
+    const state = window.__INITIAL_STATE__;
+    const user = state?.user || {};
+    const userId = user.userId || user.user_id || user.id || '';
+    const nickname = user.nickname || user.nickName || '';
+    const needsLogin =
+      text.includes('登录后查看搜索结果') ||
+      (text.includes('手机号登录') && text.includes('获取验证码'));
+    const hasSignedInNav = text.includes('我') && text.includes('发布') && text.includes('通知');
+    return {
+      loggedIn: !needsLogin && (Boolean(userId || nickname) || hasSignedInNav),
+      userId,
+      nickname,
+      needsLogin,
+    };
+  }).catch(() => ({ loggedIn: false, userId: '', nickname: '', needsLogin: false }));
+}
+
+function notLoggedInResult() {
+  return {
+    success: false,
+    source: 'browser_live',
+    error: 'not_logged_in',
+    message: '请先在 CDP 浏览器窗口登录小红书',
+    total: 0,
+    notes: [],
+  };
+}
+
 /**
  * 实时搜索小红书笔记
  * @param {string} keyword - 搜索关键词
@@ -64,12 +95,20 @@ async function searchNotes(keyword, maxResults = 9999) {
     searchPage = null;
     page = await getSearchPage();
   }
+
+  const currentLoginStatus = await getLoginStatusFromPage(page);
+  if (currentLoginStatus.needsLogin) {
+    console.log('[Search] 当前浏览器未登录小红书，无法读取实时搜索结果');
+    return notLoggedInResult();
+  }
   
   // 导航前设置请求拦截，捕获搜索 API 请求模板
   const capturedSearchReq = { url: '', headers: {}, body: null };
   const capturedSearchResp = { items: [], has_more: false };
-  
+
+  let interceptionEnabled = false;
   await page.setRequestInterception(true);
+  interceptionEnabled = true;
   const onRequest = async (req) => {
     const url = req.url();
     if (url.includes('search/notes') && req.method() === 'POST') {
@@ -77,7 +116,11 @@ async function searchNotes(keyword, maxResults = 9999) {
       capturedSearchReq.headers = req.headers();
       try { capturedSearchReq.body = JSON.parse(req.postData()); } catch(e) {}
     }
-    req.continue();
+    try {
+      req.continue();
+    } catch (e) {
+      console.log(`[Search] 请求继续失败: ${e.message}`);
+    }
   };
   page.on('request', onRequest);
   
@@ -98,19 +141,44 @@ async function searchNotes(keyword, maxResults = 9999) {
   // 导航到搜索页面
   const searchUrl = `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(keyword)}&source=web_search_result_notes`;
   console.log(`[Search] 导航: ${searchUrl}`);
-  await page.goto(searchUrl, { waitUntil: 'networkidle2', timeout: 30000 });
-  
+  try {
+    await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
+  } catch (e) {
+    console.log(`[Search] 导航未完全完成，继续读取页面: ${e.message}`);
+  }
+
   // 等待搜索结果加载
-  await new Promise(r => setTimeout(r, 3000));
-  
+  await new Promise(r => setTimeout(r, 5000));
+
   const initialCount = capturedSearchResp.items.length;
   console.log(`[Search] 初始加载: ${initialCount} 条, has_more=${capturedSearchResp.has_more}`);
   console.log(`[Search] 捕获请求: ${capturedSearchReq.url ? '成功' : '失败'}, body=${JSON.stringify(capturedSearchReq.body)?.substring(0,80)}`);
-  
+
   // 移除拦截器
   page.off('request', onRequest);
   page.off('response', onResponse);
-  await page.setRequestInterception(false);
+  if (interceptionEnabled) {
+    await page.setRequestInterception(false).catch(e => {
+      console.log(`[Search] 关闭请求拦截失败: ${e.message}`);
+    });
+  }
+
+  if (capturedSearchResp.items.length === 0) {
+    const pageStatus = await page.evaluate(() => {
+      const text = document.body?.innerText || '';
+      return {
+        needsLogin:
+          text.includes('登录后查看搜索结果') ||
+          (text.includes('手机号登录') && text.includes('获取验证码')),
+        preview: text.slice(0, 180),
+      };
+    }).catch(() => null);
+
+    if (pageStatus?.needsLogin) {
+      console.log('[Search] 当前浏览器未登录小红书，无法读取实时搜索结果');
+      return notLoggedInResult();
+    }
+  }
   
   // 收集所有结果
   const allItems = [...capturedSearchResp.items];
@@ -303,15 +371,7 @@ app.get('/health', async (req, res) => {
 app.get('/login-status', async (req, res) => {
   try {
     const page = await getSearchPage();
-    const isLogin = await page.evaluate(() => {
-      const state = window.__INITIAL_STATE__;
-      if (state && state.user) {
-        return { loggedIn: true, userId: state.user.userId || '', nickname: state.user.nickname || '' };
-      }
-      // 检查是否有登录按钮
-      const loginBtn = document.querySelector('[class*="login"], .login-btn');
-      return { loggedIn: !loginBtn };
-    });
+    const isLogin = await getLoginStatusFromPage(page);
     res.json(isLogin);
   } catch (e) {
     res.json({ loggedIn: false, error: e.message });

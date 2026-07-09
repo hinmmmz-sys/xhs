@@ -76,7 +76,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="p-5">
+    <div className="px-4 py-4 sm:p-5">
       {/* ===== Header / Toolbar ===== */}
       <DashboardToolbar
         dateRange={dateRange}
@@ -118,7 +118,7 @@ export default function DashboardPage() {
               </span>
               <span className="text-[10px] text-fainter font-mono">· CORE METRICS</span>
             </div>
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
               <MetricCard metric={overview.total_payment} icon={DollarSign} />
               <MetricCard metric={overview.order_count} icon={ShoppingCart} />
               <MetricCard metric={overview.click_payment_rate} icon={Percent} />
@@ -135,7 +135,7 @@ export default function DashboardPage() {
               </span>
               <span className="text-[10px] text-fainter font-mono">· TRAFFIC &amp; ADS</span>
             </div>
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
               <MetricCard metric={overview.visitor_count} icon={Users} />
               <MetricCard metric={overview.exposure_count} icon={Eye} />
               <MetricCard metric={overview.roas} icon={Target} />
@@ -145,8 +145,8 @@ export default function DashboardPage() {
           </div>
 
           {/* ===== 核心趋势 + 渠道拆分 ===== */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2 bg-panel rounded-md border border-line p-4">
+          <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
+            <div className="bg-panel rounded-md border border-line p-4 xl:col-span-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <TrendingUpIcon className="w-3.5 h-3.5 text-muted" />
                 <span className="text-[10px] font-semibold text-muted uppercase tracking-[0.16em] font-mono">
@@ -169,14 +169,14 @@ export default function DashboardPage() {
               </span>
               <span className="text-[10px] text-fainter font-mono">· 直播 &amp; 短视频</span>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
               <ChannelDetailCard channel={overview.live_streaming} icon="live" />
               <ChannelDetailCard channel={overview.short_video} icon="video" />
             </div>
           </div>
 
           {/* ===== 商品 & 广告明细表 ===== */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
             <TopSKUTable skus={overview.top_skus} />
             <AdPerformanceTable rows={overview.ad_performance} />
           </div>
@@ -211,7 +211,7 @@ export default function DashboardPage() {
             ) : (
               <>
                 {/* Stats summary */}
-                <div className="grid grid-cols-4 gap-3 mb-3">
+                <div className="grid grid-cols-2 gap-3 mb-3 lg:grid-cols-4">
                   <div className="bg-panel rounded-md border border-line p-3.5">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-[10px] text-faint font-mono">问题总数</span>
